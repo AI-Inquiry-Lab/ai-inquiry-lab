@@ -494,7 +494,10 @@ if image:
         with Lab_area:
             st.markdown('<div class="lab-anchor-green"></div>', unsafe_allow_html=True)# UI layout consistency check
             gallery_size = 350  # 画像サイズを350に固定（スライダー削除）
-            path = r"C:\Python practice\web_app\data"
+            if os.path.exists(r"C:\Python practice\Antigravity"):
+                path = r"C:\Python practice\Antigravity"
+            else:
+                path = "data"
 
             steps_row1 = [
                 {"file": f"{path}/ori.png",  "badge": "STEP 1", "title": "入力：元画像"},

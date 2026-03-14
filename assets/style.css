@@ -1,0 +1,1171 @@
+/* ============================================================
+   セキュリティ・デザイン：インターフェースの保護
+   ============================================================ */
+
+/* 1. 開発者ツールのヒントを減らす（右クリック禁止の簡易版） */
+/* ※完全には防げませんが、「勝手にコピー」や「要素の調査」を心理的に抑制します */
+canvas,
+img,
+[data-testid="stImage"] {
+    pointer-events: none !important;
+    /* 画像の右クリック保存やドラッグを禁止 */
+    user-select: none !important;
+}
+
+/* 2. Streamlit標準のメニュー（デプロイ情報や設定）を隠す */
+/* ユーザーが設定を変更したり、アプリの内部バージョンを知るのを防ぎます */
+#MainMenu {
+    visibility: hidden !important;
+}
+
+footer {
+    visibility: hidden !important;
+}
+
+/* 標準フッターの完全消去 */
+header {
+    visibility: hidden !important;
+}
+
+/* ヘッダーの非表示（設定へのアクセス遮断） */
+
+/* 3. リンクの書き換え防止（ホバー時にURLを表示させない工夫） */
+/* 重要なアクションボタンなどを不用意に触らせないようにします */
+a:active {
+    pointer-events: none !important;
+}
+
+/* ============================================================
+   セキュリティ・デザイン：インターフェースの保護
+   ============================================================ */
+
+/* 1. 開発者ツールのヒントを減らす（右クリック禁止の簡易版） */
+/* ※完全には防げませんが、「勝手にコピー」や「要素の調査」を心理的に抑制します */
+canvas,
+img,
+[data-testid="stImage"] {
+    pointer-events: none !important;
+    /* 画像の右クリック保存やドラッグを禁止 */
+    user-select: none !important;
+}
+
+/* 2. Streamlit標準のメニュー（デプロイ情報や設定）を隠す */
+/* ユーザーが設定を変更したり、アプリの内部バージョンを知るのを防ぎます */
+#MainMenu {
+    visibility: hidden !important;
+}
+
+footer {
+    visibility: hidden !important;
+}
+
+/* 標準フッターの完全消去 */
+header {
+    visibility: hidden !important;
+}
+
+/* ヘッダーの非表示（設定へのアクセス遮断） */
+
+/* 3. リンクの書き換え防止（ホバー時にURLを表示させない工夫） */
+/* 重要なアクションボタンなどを不用意に触らせないようにします */
+a:active {
+    pointer-events: none !important;
+}
+
+/* ============================================================
+   ハッシュデータ・マスクレイヤー
+   ============================================================ */
+
+/* 1. ハッシュ化されたIDなどが表示されるエリアを自動的に難読化 */
+.secure-text {
+    filter: blur(5px);
+    /* 通常時はぼかす */
+    transition: filter 0.3s ease;
+    cursor: help;
+    background-color: #f8fafc;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* 2. マウスホバーした時だけ見えるようにする（意図しない覗き見防止） */
+.secure-text:hover {
+    filter: blur(0);
+}
+
+/* 3. コピー禁止設定：ハッシュ値をクリップボードに取らせない */
+.no-copy {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
+/* ============================================================
+   レスポンシブ対応（スマホで見やすくする設定）
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    /* 1. 実験エリアの横幅制限を解除し、余白を調整 */
+    div[data-testid="stVerticalBlock"]:has(> .element-container .stMarkdown .lab-anchor-green) {
+        min-width: 100% !important;
+        width: 100% !important;
+        padding: 15px !important;
+        /* スマホでは余白を狭く */
+        margin: 10px 0 !important;
+    }
+
+    /* 2. データテーブルを横スクロール可能にする（はみ出し防止） */
+    [data-testid="stTable"] {
+        display: block !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+    }
+
+    /* 3. テーブルのセルサイズをスマホ向けに少し小さく調整 */
+    [data-testid="stTable"] td,
+    [data-testid="stTable"] th {
+        width: 20px !important;
+        height: 20px !important;
+        min-width: 20px !important;
+        font-size: 0.8rem !important;
+    }
+
+    /* 4. メトリクス（RGB数値）を縦に並べるか、小さく横並びにする */
+    div[data-testid="stMetric"] {
+        padding: 5px !important;
+    }
+
+    div[data-testid="stMetricValue"] {
+        font-size: 1.5rem !important;
+        /* スマホでは数値を少し小さく */
+    }
+}
+
+/* ============================================================
+   AI Inquiry Lab - Ultimate Secure & Modern Style
+   ============================================================ */
+
+/* --- 1. セキュリティ＆システム保護 --- */
+/* 右クリック、ドラッグ、テキスト選択の禁止（コードや画像の保護） */
+.stApp {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
+/* Streamlit標準の脆弱性・情報漏洩ルートを完全遮断 */
+header {
+    visibility: hidden !important;
+    height: 0 !important;
+}
+
+/* ヘッダーとデプロイメニュー消去 */
+footer {
+    visibility: hidden !important;
+    height: 0 !important;
+}
+
+/* 標準フッター消去 */
+#MainMenu {
+    visibility: hidden !important;
+}
+
+/* ハンバーガーメニューの無効化 */
+
+/* --- 2. 生きた背景（Animated Gradient） --- */
+.stApp {
+    background: linear-gradient(-45deg, #f8fafc, #e2e8f0, #e0f2fe, #f1f5f9) !important;
+    background-size: 400% 400% !important;
+    animation: gradientBG 15s ease infinite !important;
+    color: #1e293b !important;
+    font-family: 'Inter', 'Segoe UI', sans-serif !important;
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* --- 3. ヒーローセクション（タイトル） --- */
+.hero-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.2em;
+    line-height: 1.1;
+}
+
+.hero-sub {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: #475569;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #3b82f6;
+    padding-left: 15px;
+}
+
+/* --- 4. グラスモーフィズム・カード（実験メニュー） --- */
+.feature-card {
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    border-radius: 20px !important;
+    padding: 30px !important;
+    height: 100% !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ホバー時の近未来的な浮遊感と発光 */
+.feature-card:hover {
+    transform: translateY(-8px) !important;
+    box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15) !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+/* カード内の装飾 */
+.feature-card h3 {
+    font-size: 1.4rem !important;
+    color: #0f172a !important;
+    margin-bottom: 10px !important;
+    font-weight: 800 !important;
+}
+
+.feature-card p {
+    color: #64748b !important;
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important;
+}
+
+/* --- 5. サイバー・バッジ --- */
+.math-badge {
+    display: inline-block;
+    font-family: 'Courier New', Courier, monospace !important;
+    background: #1e293b !important;
+    color: #38bdf8 !important;
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    font-size: 0.85rem !important;
+    font-weight: bold !important;
+    margin-top: 15px !important;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+/* --- 6. ロックされたミッション（準備中）のスタイル --- */
+.locked-card {
+    opacity: 0.6;
+    filter: grayscale(80%);
+}
+
+.locked-card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    cursor: not-allowed;
+}
+
+/* --- 7. インサイト・ターミナル --- */
+.insight-card {
+    background: #0f172a !important;
+    color: #e2e8f0 !important;
+    border-left: 5px solid #10b981 !important;
+    padding: 20px !important;
+    border-radius: 12px !important;
+    font-family: monospace !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.insight-card strong {
+    color: #10b981 !important;
+}
+
+/* --- 8. フルワイド・フッター --- */
+.full-width-footer {
+    width: 100vw !important;
+    position: relative !important;
+    left: 50% !important;
+    right: 50% !important;
+    margin-left: -50vw !important;
+    margin-right: -50vw !important;
+    background-color: #ffffff !important;
+    color: #64748b !important;
+    text-align: center !important;
+    padding: 40px 0 20px 0 !important;
+    border-top: 1px solid #e2e8f0 !important;
+    margin-top: 80px !important;
+    font-size: 0.85rem !important;
+}
+
+/* ============================================================
+   フルワイド・フッター
+   ============================================================ */
+.custom-footer {
+    /* 魔法の計算式：親要素のパディングを無視して画面端まで強制拡大 */
+    width: 100vw !important;
+    position: relative !important;
+    left: 50% !important;
+    right: 50% !important;
+    margin-left: -50vw !important;
+    margin-right: -50vw !important;
+
+    /* デザイン設定 */
+    background-color: #ffffff !important;
+    /* 背景を真っ白に固定 */
+    color: #64748b !important;
+    /* 落ち着いたグレー文字 */
+    text-align: center !important;
+    padding: 40px 0 30px 0 !important;
+    /* 上下の余白をプロ仕様に調整 */
+    border-top: 1px solid #e2e8f0 !important;
+    /* 境界線は実線で高級感を */
+    margin-top: 80px !important;
+    /* コンテンツとの間に十分な空間 */
+    letter-spacing: 0.05em !important;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.02) !important;
+    /* 上方向への微かな影 */
+}
+
+/* サイト名（strongタグ）の装飾 */
+.custom-footer strong {
+    color: #1e293b !important;
+    font-weight: 700 !important;
+}
+
+/* リンクの装飾：mitei | 連絡先 など */
+.custom-footer a {
+    color: #6366f1 !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+    margin: 0 8px !important;
+    transition: all 0.3s ease !important;
+}
+
+.custom-footer a:hover {
+    color: #4f46e5 !important;
+    text-decoration: underline !important;
+}
+
+/* モバイル対応：画面幅が狭い時はパディングを調整 */
+@media (max-width: 768px) {
+    .custom-footer {
+        padding: 30px 20px !important;
+        font-size: 0.8rem !important;
+    }
+}
+
+/* ============================================================
+   1. アプリ全体の基盤（背景・フォント・共通余白）
+   ============================================================ */
+.stApp {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+}
+
+/* 親しみやすく、かつプロフェッショナルなフォントセット */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+li,
+span,
+label,
+ul,
+li,
+button {
+    color: #0d1b2a !important;
+    font-family: 'Segoe UI', 'Roboto', 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif !important;
+    letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   2. 見出し・ナビゲーション（Subheader / Tabs）
+   ============================================================ */
+
+/* st.title & st.header: ページの主役 */
+.stApp h1,
+.stApp h2 {
+    color: #9392e0 !important;
+    /* 青とピンクの中間色（ラベンダーブルー） */
+    font-weight: 800 !important;
+    padding-bottom: 15px !important;
+    position: relative !important;
+    letter-spacing: 0.05em !important;
+    margin-top: 2rem !important;
+}
+
+.stApp h1 {
+    font-size: 2.2rem !important;
+}
+
+.stApp h2 {
+    font-size: 1.8rem !important;
+}
+
+.stApp h3 {
+    background-color: #ffffff !important;
+    padding: 15px 25px !important;
+    border-radius: 15px !important;
+    border: 1.5px solid #e0e6ed !important;
+    border-left: 12px solid #e0e6ed !important;
+    box-shadow: 6px 6px 0px rgba(224, 230, 237, 0.5) !important;
+    margin-top: 2.5rem !important;
+    margin-bottom: 1.2rem !important;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+
+    /* 文字スタイル */
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+    color: #1a365d !important;
+    display: flex;
+    align-items: center;
+}
+
+/* subheaderの文字の前に自動で小さな「AIチップ」風アイコンを添える */
+.stApp h3::before {
+    content: '◈';
+    margin-right: 10px;
+    color: #3a7bd5;
+    font-size: 1.2rem;
+}
+
+/* st.tabs: ボタン風デザイン  */
+div[data-testid="stTabs"] {
+    gap: 10px !important;
+}
+
+div[data-testid="stTabs"] button {
+    background-color: #ffffff !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 10px 10px 0 0 !important;
+    padding: 10px 20px !important;
+    transition: all 0.3s ease !important;
+}
+
+div[data-testid="stTabs"] button:hover {
+    border-bottom: 3px solid #e6accc !important;
+    color: #e6accc !important;
+    transform: translateY(-2px) !important;
+}
+
+div[data-testid="stTabs"] button[aria-selected="true"] {
+    background-color: #e6accc !important;
+    color: #ffffff !important;
+    z-index: 2;
+}
+
+div[data-testid="stTabs"] button p {
+    font-size: 1.1rem !important;
+    font-weight: bold !important;
+}
+
+/* ============================================================
+   st.divider: 短めのセミ透明・光のボーダー
+   ============================================================ */
+hr {
+    border: none !important;
+    height: 2px !important;
+    background: linear-gradient(to right,
+            transparent,
+            rgba(81, 135, 217, 0.838) 100% transparent) !important;
+    width: 9% !important;
+    margin: 2rem auto !important;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ============================================================
+   st.header
+   ============================================================ */
+div[data-testid="stHeaderBlock"] h2,
+.stHeading h2 {
+    color: #3a7bd5 !important;
+    font-size: 1.8rem !important;
+    font-weight: 800 !important;
+    padding: 15px 45px !important;
+    /* 左右に少しゆとりを持たせてプロ感を出す */
+    position: relative !important;
+    display: inline-block !important;
+    margin-top: 2rem !important;
+    margin-bottom: 1rem !important;
+    background-color: #ffffff !important;
+    /* 真っ白な背景で清潔感を */
+    border-radius: 10px !important;
+    /* 軽い影をつけて、背景から少し浮き立たせます */
+    box-shadow: 0 4px 10px rgba(58, 123, 213, 0.1) !important;
+}
+
+div[data-testid="stHeaderBlock"] h2,
+.stHeading h2 {
+    color: #3a7bd5 !important;
+    /* 信頼の青 */
+    font-size: 1.6rem !important;
+    font-weight: 800 !important;
+
+    /* 背景と枠の設定 */
+    background-color: #ffffff !important;
+    border: 3px solid #3a7bd5 !important;
+    /* 青い枠でぐるっと囲む */
+    border-radius: 12px !important;
+
+    /* 余白の調整 */
+    padding: 12px 25px !important;
+    display: inline-block !important;
+    /* 文字の長さに合わせる */
+
+    /* 外側の余白 */
+    margin-top: 2.5rem !important;
+    margin-bottom: 1.5rem !important;
+
+    /* シャドウを入れて少し浮かせる（プロの隠し味） */
+    box-shadow: 0 4px 12px rgba(58, 123, 213, 0.15) !important;
+}
+
+/* 以前の ::before と ::after （カギ括弧）の指定を消去するために空にする */
+div[data-testid="stHeaderBlock"] h2::before,
+.stHeading h2::before,
+div[data-testid="stHeaderBlock"] h2::after,
+.stHeading h2::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* --- サイドバー全体の背景と質感 --- */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%) !important;
+    border-right: 1px solid rgba(59, 130, 246, 0.3) !important;
+    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* サイドバー内のテキストカラーを一括設定 */
+[data-testid="stSidebar"] .stMarkdown,
+[data-testid="stSidebar"] p {
+    color: #e2e8f0 !important;
+}
+
+/* ナビゲーションリンクのボタン化（ホバー演出） */
+[data-testid="stSidebar"] a {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    padding: 10px !important;
+    margin-bottom: 8px !important;
+    transition: all 0.3s ease !important;
+}
+
+[data-testid="stSidebar"] a:hover {
+    background: rgba(59, 130, 246, 0.2) !important;
+    border-color: #3b82f6 !important;
+    transform: translateX(5px);
+}
+
+/* 🛡️ システムステータス（成功時）のカスタム */
+[data-testid="stSidebar"] .stAlert {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: #10b981 !important;
+    border: 1px solid #10b981 !important;
+}
+
+/* 🔑 アクセスキー（Hash表示）の装飾 */
+.access-key-box {
+    background: #000000 !important;
+    border: 1px dashed #3b82f6 !important;
+    padding: 10px;
+    border-radius: 8px;
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+}
+
+/* ラボ・ガイドボックスのデザイン */
+.guide-box {
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 15px;
+    padding: 20px;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.guide-box:hover {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-color: #3b82f6;
+    transform: translateY(-5px);
+}
+
+.guide-box h4 {
+    color: #1e3a8a;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    border-left: 4px solid #3b82f6;
+    padding-left: 10px;
+}
+
+.guide-box p {
+    color: #475569;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* ============================================================
+   3. 特殊ボックス（解説・ポイント・警告）
+   ============================================================ */
+
+/* 解説ボックス (explanation-box) */
+.explanation-box {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    border-left: 8px solid #3a7bd5;
+    color: #0d1b2a !important;
+    line-height: 1.6;
+}
+
+.explanation-box * {
+    color: #0d1b2a !important;
+}
+
+.explanation-box h3 {
+    color: #3a7bd5 !important;
+    font-weight: bold !important;
+    margin-top: 0 !important;
+}
+
+.explanation-box b,
+.explanation-box strong {
+    color: #000000 !important;
+    font-weight: 900 !important;
+}
+
+/* ポイントボックス (point-box) */
+.point-box {
+    background-color: #f0f7ff;
+    padding: 18px;
+    border-radius: 15px;
+    border: 2px dashed #3a7bd5;
+    margin: 15px 0px;
+}
+
+/* 警告ボックス (warning-box) */
+.warning-box {
+    background-color: #fff5f5;
+    padding: 15px;
+    border-radius: 12px;
+    border-left: 5px solid #ff4b4b;
+    color: #a00000 !important;
+    font-weight: bold;
+}
+
+/* ============================================================
+   4. 入力ウィジェット（ボタン・ラジオ・セレクト）
+   ============================================================ */
+div.stButton>button {
+    height: 80px !important;
+    border-radius: 20px !important;
+    border: 2px solid #3a7bd5 !important;
+    background-color: #ffffff !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+    width: 100%;
+}
+
+div.stButton>button:hover {
+    transform: translateY(-5px) !important;
+    background-color: #f0f7ff !important;
+    box-shadow: 0 12px 20px rgba(58, 123, 213, 0.3) !important;
+}
+
+div.stButton>button p {
+    font-size: 1.1rem !important;
+    font-weight: bold !important;
+    color: #3a7bd5 !important;
+}
+
+/* --- 改良：透明レイヤー専用設定（既存デザインを汚さない） --- */
+.clickable-card-container {
+    position: relative;
+    /* 親として固定 */
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+/* カードの上に被さる透明ボタンのラッパー */
+.invisible-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 10 !important;
+    /* カードより上に配置 */
+}
+
+/* 既存のボタンデザインを上書きして「透明化」する専用クラス */
+.invisible-overlay .stButton>button {
+    height: 100% !important;
+    /* カードの高さ一杯に広がる */
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.invisible-overlay .stButton>button:hover {
+    background: rgba(59, 130, 246, 0.05) !important;
+    /* わずかな反応 */
+    transform: none !important;
+    /* カード自体が動くのでボタンは動かさない */
+}
+
+/* ボタン内のテキスト（pタグ）も完全に隠す */
+.invisible-overlay .stButton>button p {
+    display: none !important;
+}
+
+/* ラジオボタン全体のラベル（質問文など） */
+div[data-testid="stRadio"]>label p {
+    font-size: 1.1rem !important;
+    font-weight: bold !important;
+    color: #3a7bd5 !important;
+}
+
+/* ラジオボタンの選択肢グループのコンテナ */
+div[data-testid="stRadio"] div[role="radiogroup"] {
+    gap: 10px !important;
+    padding: 5px 0 !important;
+}
+
+/* 各選択肢のラベル枠（タイル風に変更） */
+div[data-testid="stRadio"] div[role="radiogroup"] label {
+    background-color: #ffffff !important;
+    border: 2px solid #e0e0e0 !important;
+    border-radius: 12px !important;
+    padding: 10px 20px !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* マウスホバー時の動き */
+div[data-testid="stRadio"] div[role="radiogroup"] label:hover {
+    border-color: #3a7bd5 !important;
+    transform: translateY(-2px) !important;
+    background-color: #f0f7ff !important;
+}
+
+/* 選択されている時のスタイル */
+div[data-testid="stRadio"] div[role="radiogroup"] label[data-selected="true"] {
+    border-color: #3a7bd5 !important;
+    background-color: #3a7bd5 !important;
+    box-shadow: 0 4px 10px rgba(58, 123, 213, 0.3) !important;
+}
+
+/* 選択されている時の文字色を白くする */
+div[data-testid="stRadio"] div[role="radiogroup"] label[data-selected="true"] p {
+    color: #ffffff !important;
+}
+
+/* ラジオボタンの丸いポッチ自体を消す（タイルそのものがボタンになるため） */
+div[data-testid="stRadio"] div[role="radiogroup"] label div[data-testid="stMarker"] {
+    display: none !important;
+}
+
+/* 選択肢のテキストサイズ調整 */
+div[data-testid="stRadio"] div[role="radiogroup"] label div p {
+    font-size: 1.1rem !important;
+    font-weight: bold !important;
+    margin: 0 !important;
+}
+
+/* セレクトボックス */
+div[data-baseweb="select"]>div {
+    background-color: #ffffff !important;
+    color: #0d1b2a !important;
+    border: 1px solid #3a7bd5 !important;
+}
+
+/* ポップアップ・メニュー内の文字（視認性向上） */
+div[role="listbox"] *,
+div[role="menu"] *,
+div[data-baseweb="popover"] *,
+div[role="tooltip"] * {
+    color: #ffffff !important;
+}
+
+/* ============================================================
+   5. データ・画像表示（表・キャプション）
+   ============================================================ */
+/* メトリクス全体を包む箱の設定 */
+div[data-testid="stMetric"] {
+    background-color: #ffffff !important;
+    border: 2px solid #3a7bd5 !important;
+    /* 爽やかな青い枠 */
+    border-radius: 15px !important;
+    padding: 15px !important;
+    text-align: center !important;
+    /* 全体を中央寄せ */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* ラベル (🔴 Red など) の調整 */
+div[data-testid="stMetricLabel"] {
+    display: flex !important;
+    justify-content: center !important;
+    font-weight: bold !important;
+    color: #555 !important;
+}
+
+/* 数値 (255 など) の調整 */
+div[data-testid="stMetricValue"] {
+    font-family: 'Courier New', Courier, monospace !important;
+    /* デジタルっぽく */
+    font-size: 2.2rem !important;
+    color: #333 !important;
+    display: flex !important;
+    justify-content: center !important;
+}
+
+/* カラム間の隙間を少し広げて見やすくする */
+div[data-testid="column"] {
+    padding: 0 10px !important;
+}
+
+/* データフレーム */
+[data-testid="stTable"] td,
+[data-testid="stTable"] th {
+    width: 20px !important;
+    /* 80pxから50pxに小さく */
+    height: 20px !important;
+    /* 高さを幅に合わせる */
+    min-width: 20px !important;
+    max-width: 20px !important;
+    padding: 0 !important;
+    /* 余白を削ってコンパクトに */
+    text-align: center !important;
+    vertical-align: middle !important;
+    font-size: 1.0rem !important;
+    /* 数字も少し小さくして収まりを良くする */
+}
+
+/* 枠全体の幅を「100%」から「中身に合わせる」に変更 */
+div[data-testid="stVerticalBlock"]:has(> .element-container .stMarkdown .lab-anchor-green) {
+    background-color: #ffffff !important;
+    border: 3px dashed #adff2f !important;
+    border-radius: 25px !important;
+
+    /* 横幅を「最大」から「中身がちょうど収まるサイズ」に変更 */
+    display: inline-block !important;
+    min-width: 800px !important;
+    /* バランスの良い最小幅 */
+    width: auto !important;
+
+    padding: 30px !important;
+    margin: 2rem auto !important;
+    /* 中央寄せ */
+    display: block !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 画像キャプション */
+div[data-testid="stImageCaption"] {
+    color: #000000 !important;
+    font-weight: 600 !important;
+    text-align: center;
+}
+
+/* ============================================================
+   1. 実験エリア (Lab Area) & 全般
+   ============================================================ */
+/* 特定のコンテナだけを囲う（二重枠防止版） */
+div[data-testid="stVerticalBlock"]:has(> .element-container .stMarkdown .lab-anchor-green) {
+    background-color: #ffffff !important;
+    border: 3px dashed #adff2f !important;
+    border-radius: 25px !important;
+    padding: 30px !important;
+    margin: 2rem auto !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 目印は表示しない */
+.lab-anchor-green {
+    display: none;
+}
+
+/* 2. データテーブル (Square Cells) */
+[data-testid="stTable"] td,
+[data-testid="stTable"] th {
+    width: 20px !important;
+    height: 35px !important;
+    min-width: 20px !important;
+    max-width: 20px !important;
+    padding: 0 !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    font-size: 1.0rem !important;
+}
+
+/* 3. メトリクス (RGB Panels) */
+div[data-testid="stMetric"] {
+    background-color: #ffffff !important;
+    border: 2px solid #3a7bd5 !important;
+    border-radius: 15px !important;
+    padding: 15px !important;
+    text-align: center !important;
+}
+
+div[data-testid="stMetricLabel"] {
+    justify-content: center !important;
+    font-weight: bold !important;
+}
+
+div[data-testid="stMetricValue"] {
+    justify-content: center !important;
+    font-family: 'Courier New', monospace !important;
+}
+
+/* 4. ボーダーライン (Gradient Divider) */
+hr {
+    border: none !important;
+    height: 2px !important;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.6), transparent) !important;
+    width: 80% !important;
+    margin: 2rem auto !important;
+}
+
+/* 5. ギャラリー & システムステータス */
+.status-header {
+    background: #262730;
+    color: #adff2f;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border-left: 5px solid #adff2f;
+    font-family: 'Courier New', monospace;
+    margin-bottom: 20px;
+}
+
+.img-frame {
+    background-color: #eeeeee !important;
+    padding: 20px !important;
+    border-radius: 15px !important;
+    text-align: center !important;
+    border: 1px solid #dcdcdc !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+}
+
+.step-badge {
+    background: linear-gradient(135deg, #3a7bd5, #00d2ff) !important;
+    color: white !important;
+    padding: 5px 15px !important;
+    border-radius: 20px !important;
+    font-size: 0.75rem !important;
+    font-weight: bold !important;
+    margin-bottom: 10px !important;
+}
+
+.caption-text {
+    color: #2c3e50 !important;
+    font-weight: 800 !important;
+    font-size: 1rem !important;
+}
+
+/* --- アニメーション設定 --- */
+@keyframes pulse-red {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes bounce-down {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(15px);
+    }
+}
+
+/* ギャラリー全体の共通設定 */
+.img-frame {
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    position: relative;
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+.frame-phase2 {
+    background-color: #e8f4f8;
+}
+
+.frame-result {
+    background-color: #fff0f0;
+    border: 2px solid #ffcccc;
+}
+
+/* 矢印（横向き：➡） */
+.row-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 185px;
+    height: 100%;
+    padding-top: 50%;
+    font-size: 65px;
+    color: #ff4b4b;
+    /* 赤に変更 */
+    font-weight: bold;
+    animation: pulse-red 2s infinite;
+    /* 前のパルスを適用 */
+}
+
+/* 折り返し矢印（SVG）のアニメーション */
+.show-arrow-svg {
+    display: inline-block;
+    animation: bounce-down 1.5s infinite, pulse-red 3s infinite;
+}
+
+/* 折り返し用の太い赤矢印（SVG） */
+.turn-arrow-container {
+    animation: bounce-down 1.5s infinite;
+    /* 前のバウンドを適用 */
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    div[data-testid="column"] {
+        min-width: 100% !important;
+        margin-bottom: 20px;
+    }
+
+    .row-arrow {
+        transform: rotate(90deg);
+        padding: 10px 0;
+    }
+}
+
+/* ============================================================
+   6. その他装飾
+   ============================================================ */
+.highlight-text {
+    background: linear-gradient(transparent 70%, #ffdeeb 70%);
+    font-weight: bold;
+}
+
+[data-testid="stWidgetLabel"] p {
+    font-size: 0.9rem !important;
+    font-weight: bold !important;
+}
+
+
+/* ============================================================
+   7. メインタイトル・アニメーション装飾
+   ============================================================ */
+
+/* タイトル全体のコンテナ */
+.main-title-container {
+    text-align: center;
+    padding: 2rem 1rem;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 30px;
+    border: 3px solid #ffffff;
+    box-shadow: 0 10px 30px rgba(58, 123, 213, 0.1);
+    margin-bottom: 3rem;
+}
+
+/* 「AIの目」というメインテキスト */
+.main-title-text {
+    font-size: 4rem !important;
+    font-weight: 900 !important;
+    background: linear-gradient(45deg, #3a7bd5, #e6accc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0 !important;
+    filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.1));
+    letter-spacing: 0.05em;
+}
+
+/* アイコンをぷるぷる動かすアニメーション */
+.title-icon {
+    display: inline-block;
+    animation: purupuru 2s infinite ease-in-out;
+    font-size: 4.5rem;
+    vertical-align: middle;
+    margin-right: 15px;
+}
+
+@keyframes purupuru {
+
+    0%,
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    25% {
+        transform: scale(1.1) rotate(-5deg);
+    }
+
+    75% {
+        transform: scale(1.1) rotate(5deg);
+    }
+}
+
+/* サブテキスト（画像で学ぶAIの仕組み） */
+.sub-title-text {
+    font-size: 1.2rem !important;
+    color: #4a5568 !important;
+    letter-spacing: 0.3em !important;
+    text-transform: uppercase;
+    margin-top: -10px !important;
+    font-weight: bold;
+}
+
+/* ============================================================
+   8. 実験室エリア装飾
+   ============================================================ */
+div[data-testid="stVerticalBlock"]:has(> .element-container .stMarkdown .lab-anchor-green) {
+    background-color: rgba(255, 255, 255, 0.4) !important;
+    border: 3px dashed #616cc3 !important;
+    border-radius: 25px !important;
+    width: 100% !important;
+    max-width: none !important;
+    padding: 40px !important;
+    margin-top: 2rem !important;
+    margin-bottom: 2rem !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 目印そのものは表示しない */
+.lab-anchor-green {
+    display: none;
+}

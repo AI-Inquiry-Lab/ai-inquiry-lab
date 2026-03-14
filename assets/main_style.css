@@ -1,0 +1,168 @@
+/* ============================================================
+   AI Inquiry Lab - Ultimate Secure & Modern Style
+   ============================================================ */
+
+/* --- 1. セキュリティ＆システム保護 --- */
+/* 右クリック、ドラッグ、テキスト選択の禁止（コードや画像の保護） */
+.stApp {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
+/* Streamlit標準の脆弱性・情報漏洩ルートを完全遮断 */
+header {
+    visibility: hidden !important;
+    height: 0 !important;
+}
+
+/* ヘッダーとデプロイメニュー消去 */
+footer {
+    visibility: hidden !important;
+    height: 0 !important;
+}
+
+/* 標準フッター消去 */
+#MainMenu {
+    visibility: hidden !important;
+}
+
+/* ハンバーガーメニューの無効化 */
+
+/* --- 2. 生きた背景（Animated Gradient） --- */
+.stApp {
+    background: linear-gradient(-45deg, #f8fafc, #e2e8f0, #e0f2fe, #f1f5f9) !important;
+    background-size: 400% 400% !important;
+    animation: gradientBG 15s ease infinite !important;
+    color: #1e293b !important;
+    font-family: 'Inter', 'Segoe UI', sans-serif !important;
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* --- 3. ヒーローセクション（タイトル） --- */
+.hero-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.2em;
+    line-height: 1.1;
+}
+
+.hero-sub {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: #475569;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #3b82f6;
+    padding-left: 15px;
+}
+
+/* --- 4. グラスモーフィズム・カード（実験メニュー） --- */
+.feature-card {
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    border-radius: 20px !important;
+    padding: 30px !important;
+    height: 100% !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ホバー時の近未来的な浮遊感と発光 */
+.feature-card:hover {
+    transform: translateY(-8px) !important;
+    box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15) !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+/* カード内の装飾 */
+.feature-card h3 {
+    font-size: 1.4rem !important;
+    color: #0f172a !important;
+    margin-bottom: 10px !important;
+    font-weight: 800 !important;
+}
+
+.feature-card p {
+    color: #64748b !important;
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important;
+}
+
+/* --- 5. サイバー・バッジ --- */
+.math-badge {
+    display: inline-block;
+    font-family: 'Courier New', Courier, monospace !important;
+    background: #1e293b !important;
+    color: #38bdf8 !important;
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    font-size: 0.85rem !important;
+    font-weight: bold !important;
+    margin-top: 15px !important;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+/* --- 6. ロックされたミッション（準備中）のスタイル --- */
+.locked-card {
+    opacity: 0.6;
+    filter: grayscale(80%);
+}
+
+.locked-card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    cursor: not-allowed;
+}
+
+/* --- 7. インサイト・ターミナル --- */
+.insight-card {
+    background: #0f172a !important;
+    color: #e2e8f0 !important;
+    border-left: 5px solid #10b981 !important;
+    padding: 20px !important;
+    border-radius: 12px !important;
+    font-family: monospace !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.insight-card strong {
+    color: #10b981 !important;
+}
+
+/* --- 8. フルワイド・フッター --- */
+.full-width-footer {
+    width: 100vw !important;
+    position: relative !important;
+    left: 50% !important;
+    right: 50% !important;
+    margin-left: -50vw !important;
+    margin-right: -50vw !important;
+    background-color: #ffffff !important;
+    color: #64748b !important;
+    text-align: center !important;
+    padding: 40px 0 20px 0 !important;
+    border-top: 1px solid #e2e8f0 !important;
+    margin-top: 80px !important;
+    font-size: 0.85rem !important;
+}

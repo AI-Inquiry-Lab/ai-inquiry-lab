@@ -497,15 +497,15 @@ if image:
             path = r"C:\Python practice\web_app\data"
 
             steps_row1 = [
-                {"file": f"{path}\\ori.png",  "badge": "STEP 1", "title": "入力：元画像"},
-                {"file": f"{path}\\mono.png", "badge": "STEP 2", "title": "変換：モノクロ"},
-                {"file": f"{path}\\blur.png", "badge": "STEP 3", "title": "除去：ぼかし"}
+                {"file": f"{path}/ori.png",  "badge": "STEP 1", "title": "入力：元画像"},
+                {"file": f"{path}/mono.png", "badge": "STEP 2", "title": "変換：モノクロ"},
+                {"file": f"{path}/blur.png", "badge": "STEP 3", "title": "除去：ぼかし"}
             ]
 
             steps_row2 = [
-                {"file": f"{path}\\edge.png", "badge": "STEP 4", "title": "抽出：エッジ"},
-                {"file": f"{path}\\ans.png",  "badge": "TARGET", "title": "理想：正解データ"},
-                {"file": f"{path}\\dif.png",  "badge": "RESULT", "title": "判定：一致率"}
+                {"file": f"{path}/edge.png", "badge": "STEP 4", "title": "抽出：エッジ"},
+                {"file": f"{path}/ans.png",  "badge": "TARGET", "title": "理想：正解データ"},
+                {"file": f"{path}/dif.png",  "badge": "RESULT", "title": "判定：一致率"}
             ]
 
             # --- 横方向の矢印表示ヘルパー ---

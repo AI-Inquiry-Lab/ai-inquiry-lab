@@ -3,3 +3,5 @@ __pycache__/
 .streamlit/secrets.toml
 .venv/
 *.pyc
+Antigravity/
+data/Antigravity/

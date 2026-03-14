@@ -233,7 +233,7 @@ if image:
             st.markdown('<div class="lab-anchor-green"></div>', unsafe_allow_html=True)
             col_main1, col_main2 = st.columns([1, 2])
             with col_main1:
-                img_path = r"C:/Python practice/web_app/data/rgb.jpg"
+                img_path = "data/rgb.jpg"
                 img_base64 = ""
                 if os.path.exists(img_path):
                     img_base64 = get_image_as_base64(img_path)
@@ -714,7 +714,7 @@ if image:
         with Lab_area:
             st.markdown('<div class="lab-anchor-green"></div>', unsafe_allow_html=True)
             # --- 1. データの準備 ---
-            img_path = r"C:\Python practice\web_app\data\lasta.png"
+            img_path = "data/lasta.png"
             img_base64 = ""
             if os.path.exists(img_path):
                 img_base64 = get_image_as_base64(img_path)

@@ -726,7 +726,7 @@ if image:
                 if img_base64:
                     # 画像をHTMLで表示（サイズをカラムに合わせる）
                     st.markdown(f"""
-                        <div style="border: 1px solid #ccc; border-radius: 8px; overflow: hidden; background-color: white;">
+                        <div style="border: 1px solid #ccc; border-radius: 8px; overflow: hidden">
                             <img class="html-zoom-img" src="data:image/png;base64,{img_base64}" style="width: 100%; display: block;">
                         </div>
                         <p style="text-align: center; color: #666; font-size: 0.8em; margin-top: 5px;">

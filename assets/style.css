@@ -891,16 +891,32 @@ hr {
     /* 前のバウンドを適用 */
 }
 
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
-    div[data-testid="column"] {
-        min-width: 100% !important;
-        margin-bottom: 20px;
-    }
+[data-testid="stHorizontalBlock"] {
+    display: flex !important;
+    flex-direction: row !important;
+    /* 縦並びを禁止 */
+    flex-wrap: nowrap !important;
+    /* 折り返しを禁止 */
+    align-items: flex-start !important;
+}
 
-    .row-arrow {
-        transform: rotate(90deg);
-        padding: 10px 0;
+/* 2. 各列が潰れすぎないように、かつ幅を比率で保つ */
+[data-testid="column"] {
+    min-width: 0 !important;
+    /* 幅が狭くなるのを許可する */
+    flex-shrink: 1 !important;
+    flex-grow: 1 !important;
+}
+
+/* 3. スマホでも「PCの50%ズーム」のように見せるための調整 */
+@media (max-width: 768px) {
+
+    /* 文字が大きすぎると崩れるので、スマホでは少し小さくする */
+    .stMarkdown,
+    p,
+    span,
+    label {
+        font-size: 0.7rem !important;
     }
 }
 

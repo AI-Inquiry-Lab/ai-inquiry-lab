@@ -934,54 +934,62 @@ hr {
     height: auto !important;
 }
 
-/* 画面サイズに応じて全体のレイアウトと画像を「独自の比率で」縮小 */
-@media (max-width: 1100px) {
-    .main .block-container {
-        zoom: 0.9 !important;
-    }
-    [data-testid="stImage"], .img-frame img, .html-zoom-img {
-        zoom: 0.9 !important; /* 画像の元の幅(300px等)を90%にする */
-    }
+/* 1. 横スクロールを完全に禁止し、余白を最適化 */
+section.main .block-container {
+    max-width: 100%;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    padding-top: 2rem !important;
 }
 
-@media (max-width: 900px) {
-    .main .block-container {
-        zoom: 0.8 !important;
-    }
-    [data-testid="stImage"], .img-frame img, .html-zoom-img {
-        zoom: 0.75 !important; /* レイアウトより画像をさらに小さめに維持 */
-    }
+/* 2. 画像の制御：親要素を突き破らないようにする */
+[data-testid="stImage"],
+.img-frame img,
+.html-zoom-img {
+    width: 100% !important;
+    /* 親の幅いっぱいに広がる */
+    max-width: 100% !important;
+    /* 画面からはみ出さない */
+    height: auto !important;
+    /* 比率を維持 */
 }
 
+/* 3. デバイスごとの微調整（メディアクエリ） */
+
+/* タブレット〜スマホ */
 @media (max-width: 768px) {
-    .main .block-container {
-        zoom: 0.7 !important;
+
+    /* 文字サイズは少し下げる程度に留める（読みやすさ重視） */
+    .stMarkdown,
+    p,
+    span,
+    label {
+        font-size: 0.95rem !important;
     }
-    [data-testid="stImage"], .img-frame img, .html-zoom-img {
-        zoom: 0.6 !important; /* スマホでは画像の幅を元の60%にする */
-    }
-    /* 文字が大きすぎると崩れるので、スマホでは少し小さくする */
-    .stMarkdown, p, span, label {
-        font-size: 0.8rem !important;
+
+    /* 2列に並べていた要素を1列にする設定（もしあれば） */
+    [data-testid="column"] {
+        width: 100% !important;
+        flex: 1 1 100% !important;
     }
 }
 
-@media (max-width: 500px) {
-    .main .block-container {
-        zoom: 0.55 !important;
-    }
-    [data-testid="stImage"], .img-frame img, .html-zoom-img {
-        zoom: 0.45 !important; /* 画像を元の45%にする */
+/* 小さなスマホ */
+@media (max-width: 480px) {
+
+    .stMarkdown,
+    p,
+    span,
+    label {
+        font-size: 0.9rem !important;
     }
 }
 
-@media (max-width: 380px) {
-    .main .block-container {
-        zoom: 0.45 !important;
-    }
-    [data-testid="stImage"], .img-frame img, .html-zoom-img {
-        zoom: 0.35 !important; /* 最小のスマホでは画像を元の35%にする */
-    }
+img {
+    max-width: 100%;
+    /* 親要素より大きくならない */
+    height: auto;
+    /* 比率を維持する */
 }
 
 /* ============================================================

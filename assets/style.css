@@ -927,7 +927,8 @@ hr {
 /* 2. 写真(Pythonで指定した width=〇 )をそのままの状態(100%)とする */
 /* max-widthを追加して、万が一枠をはみ出す画像があっても収めるようにする */
 [data-testid="stImage"],
-.img-frame img {
+.img-frame img,
+.html-zoom-img {
     zoom: 1 !important;
     max-width: 100% !important;
     height: auto !important;
@@ -938,7 +939,7 @@ hr {
     .main .block-container {
         zoom: 0.9 !important;
     }
-    [data-testid="stImage"], .img-frame img {
+    [data-testid="stImage"], .img-frame img, .html-zoom-img {
         zoom: 0.9 !important; /* 画像の元の幅(300px等)を90%にする */
     }
 }
@@ -947,7 +948,7 @@ hr {
     .main .block-container {
         zoom: 0.8 !important;
     }
-    [data-testid="stImage"], .img-frame img {
+    [data-testid="stImage"], .img-frame img, .html-zoom-img {
         zoom: 0.75 !important; /* レイアウトより画像をさらに小さめに維持 */
     }
 }
@@ -956,7 +957,7 @@ hr {
     .main .block-container {
         zoom: 0.7 !important;
     }
-    [data-testid="stImage"], .img-frame img {
+    [data-testid="stImage"], .img-frame img, .html-zoom-img {
         zoom: 0.6 !important; /* スマホでは画像の幅を元の60%にする */
     }
     /* 文字が大きすぎると崩れるので、スマホでは少し小さくする */
@@ -969,7 +970,7 @@ hr {
     .main .block-container {
         zoom: 0.55 !important;
     }
-    [data-testid="stImage"], .img-frame img {
+    [data-testid="stImage"], .img-frame img, .html-zoom-img {
         zoom: 0.45 !important; /* 画像を元の45%にする */
     }
 }
@@ -978,7 +979,7 @@ hr {
     .main .block-container {
         zoom: 0.45 !important;
     }
-    [data-testid="stImage"], .img-frame img {
+    [data-testid="stImage"], .img-frame img, .html-zoom-img {
         zoom: 0.35 !important; /* 最小のスマホでは画像を元の35%にする */
     }
 }

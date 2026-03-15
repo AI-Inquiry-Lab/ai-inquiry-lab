@@ -919,47 +919,67 @@ hr {
     overflow-x: hidden !important;
 }
 
-/* そのままの状態を１(100%)とする */
+/* 1. レイアウト全体をそのままの状態(100%)とする */
 .main .block-container {
     zoom: 1 !important;
 }
 
-/* 画面サイズに応じて全体のレイアウトを縮小し、横並びを崩さずに収める */
+/* 2. 写真(Pythonで指定した width=〇 )をそのままの状態(100%)とする */
+/* max-widthを追加して、万が一枠をはみ出す画像があっても収めるようにする */
+[data-testid="stImage"],
+.img-frame img {
+    zoom: 1 !important;
+    max-width: 100% !important;
+    height: auto !important;
+}
+
+/* 画面サイズに応じて全体のレイアウトと画像を「独自の比率で」縮小 */
 @media (max-width: 1100px) {
     .main .block-container {
         zoom: 0.9 !important;
+    }
+    [data-testid="stImage"], .img-frame img {
+        zoom: 0.9 !important; /* 画像の元の幅(300px等)を90%にする */
     }
 }
 
 @media (max-width: 900px) {
     .main .block-container {
-        zoom: 0.75 !important;
+        zoom: 0.8 !important;
+    }
+    [data-testid="stImage"], .img-frame img {
+        zoom: 0.75 !important; /* レイアウトより画像をさらに小さめに維持 */
     }
 }
 
 @media (max-width: 768px) {
     .main .block-container {
-        zoom: 0.6 !important;
+        zoom: 0.7 !important;
     }
-    
+    [data-testid="stImage"], .img-frame img {
+        zoom: 0.6 !important; /* スマホでは画像の幅を元の60%にする */
+    }
     /* 文字が大きすぎると崩れるので、スマホでは少し小さくする */
-    .stMarkdown,
-    p,
-    span,
-    label {
+    .stMarkdown, p, span, label {
         font-size: 0.8rem !important;
     }
 }
 
 @media (max-width: 500px) {
     .main .block-container {
-        zoom: 0.45 !important;
+        zoom: 0.55 !important;
+    }
+    [data-testid="stImage"], .img-frame img {
+        zoom: 0.45 !important; /* 画像を元の45%にする */
     }
 }
 
 @media (max-width: 380px) {
     .main .block-container {
-        zoom: 0.35 !important;
+        zoom: 0.45 !important;
+    }
+    [data-testid="stImage"], .img-frame img {
+        zoom: 0.35 !important; /* 最小のスマホでは画像を元の35%にする */
     }
 }
 

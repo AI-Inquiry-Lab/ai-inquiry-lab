@@ -197,63 +197,6 @@ a:active {
 }
 
 /* ============================================================
-   フルワイド・フッター
-   ============================================================ */
-.custom-footer {
-    /* 魔法の計算式：親要素のパディングを無視して画面端まで強制拡大 */
-    width: 100vw !important;
-    position: relative !important;
-    left: 50% !important;
-    right: 50% !important;
-    margin-left: -50vw !important;
-    margin-right: -50vw !important;
-
-    /* デザイン設定 */
-    background-color: #ffffff !important;
-    /* 背景を真っ白に固定 */
-    color: #64748b !important;
-    /* 落ち着いたグレー文字 */
-    text-align: center !important;
-    padding: 40px 0 30px 0 !important;
-    /* 上下の余白をプロ仕様に調整 */
-    border-top: 1px solid #e2e8f0 !important;
-    /* 境界線は実線で高級感を */
-    margin-top: 80px !important;
-    /* コンテンツとの間に十分な空間 */
-    letter-spacing: 0.05em !important;
-    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.02) !important;
-    /* 上方向への微かな影 */
-}
-
-/* サイト名（strongタグ）の装飾 */
-.custom-footer strong {
-    color: #1e293b !important;
-    font-weight: 700 !important;
-}
-
-/* リンクの装飾：mitei | 連絡先 など */
-.custom-footer a {
-    color: #6366f1 !important;
-    text-decoration: none !important;
-    font-weight: 500 !important;
-    margin: 0 8px !important;
-    transition: all 0.3s ease !important;
-}
-
-.custom-footer a:hover {
-    color: #4f46e5 !important;
-    text-decoration: underline !important;
-}
-
-/* モバイル対応：画面幅が狭い時はパディングを調整 */
-@media (max-width: 768px) {
-    .custom-footer {
-        padding: 30px 20px !important;
-        font-size: 0.8rem !important;
-    }
-}
-
-/* ============================================================
    1. アプリ全体の基盤（背景・フォント・共通余白）
    ============================================================ */
 .stApp {

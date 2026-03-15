@@ -908,15 +908,58 @@ hr {
     flex-grow: 1 !important;
 }
 
-/* 3. スマホでも「PCの50%ズーム」のように見せるための調整 */
-@media (max-width: 768px) {
+/* ============================================================
+   デバイスや画面の大きさに合わせた自動ズーム（横スクロール禁止）
+   ============================================================ */
 
+/* アプリ全体で「横スクロール」を完全に禁止 */
+.stApp,
+.main,
+.block-container {
+    overflow-x: hidden !important;
+}
+
+/* そのままの状態を１(100%)とする */
+.main .block-container {
+    zoom: 1 !important;
+}
+
+/* 画面サイズに応じて全体のレイアウトを縮小し、横並びを崩さずに収める */
+@media (max-width: 1100px) {
+    .main .block-container {
+        zoom: 0.9 !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .main .block-container {
+        zoom: 0.75 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .main .block-container {
+        zoom: 0.6 !important;
+    }
+    
     /* 文字が大きすぎると崩れるので、スマホでは少し小さくする */
     .stMarkdown,
     p,
     span,
     label {
-        font-size: 0.7rem !important;
+        font-size: 0.8rem !important;
+    }
+}
+
+@media (max-width: 500px) {
+    .main .block-container {
+        zoom: 0.45 !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .main .block-container {
+        zoom: 0.35 !important;
     }
 }
 

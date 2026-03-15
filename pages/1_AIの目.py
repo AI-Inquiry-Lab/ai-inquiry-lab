@@ -230,21 +230,22 @@ if image:
         st.header("🧮 画像の正体は『数字の集まり？』")
         Lab_area = st.container()
         with Lab_area:
-            st.markdown(f"""
-                <div style="
-                    border: 1px solid #ccc; 
-                    border-radius: 8px; 
-                    overflow: hidden; 
-                    background-color: white; 
-                    max-width: 300px; /* PCでは最大300pxに制限 */
-                    margin: 0 auto;   /* 中央寄せ */
-                ">
-                    <img src="data:image/png;base64,{img_base64}" style="width: 100%; display: block;">
-                </div>
-                <p style="text-align: center; color: #666; font-size: 0.8em; margin-top: 5px; max-width: 300px; margin-left: auto; margin-right: auto;">
-                    【図：加法混色】RGBの光の強さの組み合わせで色が決まる
-                </p>
-            """, unsafe_allow_html=True)
+            st.markdown('<div class="lab-anchor-green"></div>', unsafe_allow_html=True)
+            col_main1, col_main2 = st.columns([1, 2])
+            with col_main1:
+                img_path = "data/rgb.jpg"
+                img_base64 = ""
+                if os.path.exists(img_path):
+                    img_base64 = get_image_as_base64(img_path)
+                    if img_base64:
+                        st.markdown(f"""
+                            <div style="border: 1px solid #ccc; border-radius: 8px; overflow: hidden; background-color: white;">
+                                <img src="data:image/png;base64,{img_base64}" style="width: 100%; display: block;">
+                            </div>
+                            <p style="text-align: center; color: #666; font-size: 0.8em; margin-top: 5px;">
+                                【図：加法混色】RGBの光の強さの組み合わせで色が決まる
+                            </p>
+                        """, unsafe_allow_html=True)
             with col_main2:
                 st.markdown("""
                 <div class="explanation-box">

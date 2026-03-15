@@ -1,43 +1,175 @@
 /* ============================================================
-   1. GLOBAL SECURITY & INTERFACE PROTECTION
+   セキュリティ・デザイン：インターフェースの保護
    ============================================================ */
-/* アプリ全体のコピー制限と情報漏洩ルートの遮断 */
-.stApp {
-    user-select: none !important;
-    -webkit-user-select: none !important;
-    overflow-x: hidden !important;
-    /* 全体的な横スクロールを防止 */
-}
 
-/* 画像・キャンバスの右クリック保存・ドラッグ・調査を心理的に抑制 */
+/* 1. 開発者ツールのヒントを減らす（右クリック禁止の簡易版） */
+/* ※完全には防げませんが、「勝手にコピー」や「要素の調査」を心理的に抑制します */
 canvas,
 img,
 [data-testid="stImage"] {
     pointer-events: none !important;
+    /* 画像の右クリック保存やドラッグを禁止 */
     user-select: none !important;
-    max-width: 100%;
-    height: auto !important;
 }
 
-/* Streamlit標準メニュー・ヘッダー・フッターを完全非表示 */
-#MainMenu,
-header,
-footer,
-[data-testid="stHeader"] {
+/* 2. Streamlit標準のメニュー（デプロイ情報や設定）を隠す */
+/* ユーザーが設定を変更したり、アプリの内部バージョンを知るのを防ぎます */
+#MainMenu {
     visibility: hidden !important;
-    height: 0 !important;
-    padding: 0 !important;
 }
 
-/* リンクの不用意な操作を抑制 */
+footer {
+    visibility: hidden !important;
+}
+
+/* 標準フッターの完全消去 */
+header {
+    visibility: hidden !important;
+}
+
+/* ヘッダーの非表示（設定へのアクセス遮断） */
+
+/* 3. リンクの書き換え防止（ホバー時にURLを表示させない工夫） */
+/* 重要なアクションボタンなどを不用意に触らせないようにします */
 a:active {
     pointer-events: none !important;
 }
 
 /* ============================================================
-   2. SYSTEM THEME & ANIMATION
+   セキュリティ・デザイン：インターフェースの保護
    ============================================================ */
-/* 動的な背景グラデーションと基本フォント設定 */
+
+/* 1. 開発者ツールのヒントを減らす（右クリック禁止の簡易版） */
+/* ※完全には防げませんが、「勝手にコピー」や「要素の調査」を心理的に抑制します */
+canvas,
+img,
+[data-testid="stImage"] {
+    pointer-events: none !important;
+    /* 画像の右クリック保存やドラッグを禁止 */
+    user-select: none !important;
+}
+
+/* 2. Streamlit標準のメニュー（デプロイ情報や設定）を隠す */
+/* ユーザーが設定を変更したり、アプリの内部バージョンを知るのを防ぎます */
+#MainMenu {
+    visibility: hidden !important;
+}
+
+footer {
+    visibility: hidden !important;
+}
+
+/* 標準フッターの完全消去 */
+header {
+    visibility: hidden !important;
+}
+
+/* ヘッダーの非表示（設定へのアクセス遮断） */
+
+/* 3. リンクの書き換え防止（ホバー時にURLを表示させない工夫） */
+/* 重要なアクションボタンなどを不用意に触らせないようにします */
+a:active {
+    pointer-events: none !important;
+}
+
+/* ============================================================
+   ハッシュデータ・マスクレイヤー
+   ============================================================ */
+
+/* 1. ハッシュ化されたIDなどが表示されるエリアを自動的に難読化 */
+.secure-text {
+    filter: blur(5px);
+    /* 通常時はぼかす */
+    transition: filter 0.3s ease;
+    cursor: help;
+    background-color: #f8fafc;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* 2. マウスホバーした時だけ見えるようにする（意図しない覗き見防止） */
+.secure-text:hover {
+    filter: blur(0);
+}
+
+/* 3. コピー禁止設定：ハッシュ値をクリップボードに取らせない */
+.no-copy {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
+/* ============================================================
+   レスポンシブ対応（スマホで見やすくする設定）
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    /* 1. 実験エリアの横幅制限を解除し、余白を調整 */
+    div[data-testid="stVerticalBlock"]:has(> .element-container .stMarkdown .lab-anchor-green) {
+        min-width: 100% !important;
+        width: 100% !important;
+        padding: 15px !important;
+        /* スマホでは余白を狭く */
+        margin: 10px 0 !important;
+    }
+
+    /* 2. データテーブルを横スクロール可能にする（はみ出し防止） */
+    [data-testid="stTable"] {
+        display: block !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+    }
+
+    /* 3. テーブルのセルサイズをスマホ向けに少し小さく調整 */
+    [data-testid="stTable"] td,
+    [data-testid="stTable"] th {
+        width: 20px !important;
+        height: 20px !important;
+        min-width: 20px !important;
+        font-size: 0.8rem !important;
+    }
+
+    /* 4. メトリクス（RGB数値）を縦に並べるか、小さく横並びにする */
+    div[data-testid="stMetric"] {
+        padding: 5px !important;
+    }
+
+    div[data-testid="stMetricValue"] {
+        font-size: 1.5rem !important;
+        /* スマホでは数値を少し小さく */
+    }
+}
+
+/* ============================================================
+   AI Inquiry Lab - Ultimate Secure & Modern Style
+   ============================================================ */
+
+/* --- 1. セキュリティ＆システム保護 --- */
+/* 右クリック、ドラッグ、テキスト選択の禁止（コードや画像の保護） */
+.stApp {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
+/* Streamlit標準の脆弱性・情報漏洩ルートを完全遮断 */
+header {
+    visibility: hidden !important;
+    height: 0 !important;
+}
+
+/* ヘッダーとデプロイメニュー消去 */
+footer {
+    visibility: hidden !important;
+    height: 0 !important;
+}
+
+/* 標準フッター消去 */
+#MainMenu {
+    visibility: hidden !important;
+}
+
+
+/* --- 2. 生きた背景（Animated Gradient） --- */
 .stApp {
     background: linear-gradient(-45deg, #f8fafc, #e2e8f0, #e0f2fe, #f1f5f9) !important;
     background-size: 400% 400% !important;
@@ -60,32 +192,7 @@ a:active {
     }
 }
 
-/* ============================================================
-   3. DATA MASKING (SECURE LAYER)
-   ============================================================ */
-/* ハッシュ値などの難読化：ホバー時のみ表示 */
-.secure-text {
-    filter: blur(5px);
-    transition: filter 0.3s ease;
-    cursor: help;
-    background-color: #f8fafc;
-    padding: 2px 6px;
-    border-radius: 4px;
-}
-
-.secure-text:hover {
-    filter: blur(0);
-}
-
-.no-copy {
-    user-select: none !important;
-    pointer-events: none !important;
-}
-
-/* ============================================================
-   4. UI COMPONENTS (MODERN DESIGN)
-   ============================================================ */
-/* ヒーローセクション */
+/* --- 3. ヒーローセクション（タイトル） --- */
 .hero-title {
     font-size: clamp(2.5rem, 5vw, 4rem);
     font-weight: 900;
@@ -93,18 +200,20 @@ a:active {
     background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    margin-bottom: 0.2em;
     line-height: 1.1;
 }
 
 .hero-sub {
     font-size: clamp(1rem, 2vw, 1.2rem);
     color: #475569;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
     border-left: 4px solid #3b82f6;
     padding-left: 15px;
-    margin-bottom: 1.5rem;
 }
 
-/* グラスモーフィズム・カード */
+/* --- 4. グラスモーフィズム・カード（実験メニュー） --- */
 .feature-card {
     background: rgba(255, 255, 255, 0.7) !important;
     backdrop-filter: blur(10px) !important;
@@ -112,16 +221,62 @@ a:active {
     border: 1px solid rgba(255, 255, 255, 0.5) !important;
     border-radius: 20px !important;
     padding: 30px !important;
+    height: 100% !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    position: relative;
+    overflow: hidden;
 }
 
+/* ホバー時の近未来的な浮遊感と発光 */
 .feature-card:hover {
     transform: translateY(-8px) !important;
     box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15) !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
 }
 
-/* インサイト・ターミナル */
+/* カード内の装飾 */
+.feature-card h3 {
+    font-size: 1.4rem !important;
+    color: #0f172a !important;
+    margin-bottom: 10px !important;
+    font-weight: 800 !important;
+}
+
+.feature-card p {
+    color: #64748b !important;
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important;
+}
+
+/* --- 5. サイバー・バッジ --- */
+.math-badge {
+    display: inline-block;
+    font-family: 'Courier New', Courier, monospace !important;
+    background: #1e293b !important;
+    color: #38bdf8 !important;
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    font-size: 0.85rem !important;
+    font-weight: bold !important;
+    margin-top: 15px !important;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+/* --- 6. ロックされたミッション（準備中）のスタイル --- */
+.locked-card {
+    opacity: 0.6;
+    filter: grayscale(80%);
+}
+
+.locked-card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    cursor: not-allowed;
+}
+
+/* --- 7. インサイト・ターミナル --- */
 .insight-card {
     background: #0f172a !important;
     color: #e2e8f0 !important;
@@ -129,71 +284,70 @@ a:active {
     padding: 20px !important;
     border-radius: 12px !important;
     font-family: monospace !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* サイバー・バッジ */
-.math-badge {
-    font-family: 'Courier New', monospace !important;
-    background: #1e293b !important;
-    color: #38bdf8 !important;
-    padding: 6px 12px !important;
-    border-radius: 8px !important;
-    font-size: 0.85rem !important;
+.insight-card strong {
+    color: #10b981 !important;
 }
+
+
 
 /* ============================================================
-   5. RESPONSIVE DESIGN (MOBILE OPTIMIZATION)
-   ============================================================ */
-@media (max-width: 768px) {
-
-    /* 横スクロールの完全封鎖 */
-    .main .block-container {
-        max-width: 100vw !important;
-        overflow-x: hidden !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
-    }
-
-    /* テーブルのモバイル専用スクロール */
-    [data-testid="stTable"] {
-        display: block !important;
-        overflow-x: auto !important;
-        white-space: nowrap !important;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    /* メトリクスサイズの調整 */
-    div[data-testid="stMetricValue"] {
-        font-size: 1.5rem !important;
-    }
-
-    /* 画像コンテナの幅をデバイスに強制追従させる */
-    div[data-testid="stVerticalBlock"]>div {
-        width: 100% !important;
-    }
-}
-
-/* ============================================================
-   6. FULL-WIDTH CUSTOM FOOTER
+   フルワイド・フッター
    ============================================================ */
 .custom-footer {
+    /* 魔法の計算式：親要素のパディングを無視して画面端まで強制拡大 */
     width: 100vw !important;
     position: relative !important;
     left: 50% !important;
+    right: 50% !important;
     margin-left: -50vw !important;
+    margin-right: -50vw !important;
+
+    /* デザイン設定 */
     background-color: #ffffff !important;
+    /* 背景を真っ白に固定 */
     color: #64748b !important;
+    /* 落ち着いたグレー文字 */
     text-align: center !important;
     padding: 40px 0 30px 0 !important;
+    /* 上下の余白をプロ仕様に調整 */
     border-top: 1px solid #e2e8f0 !important;
+    /* 境界線は実線で高級感を */
     margin-top: 80px !important;
+    /* コンテンツとの間に十分な空間 */
+    letter-spacing: 0.05em !important;
     box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.02) !important;
+    /* 上方向への微かな影 */
 }
 
+/* サイト名（strongタグ）の装飾 */
+.custom-footer strong {
+    color: #1e293b !important;
+    font-weight: 700 !important;
+}
+
+/* リンクの装飾：mitei | 連絡先 など */
 .custom-footer a {
     color: #6366f1 !important;
     text-decoration: none !important;
+    font-weight: 500 !important;
+    margin: 0 8px !important;
     transition: all 0.3s ease !important;
+}
+
+.custom-footer a:hover {
+    color: #4f46e5 !important;
+    text-decoration: underline !important;
+}
+
+/* モバイル対応：画面幅が狭い時はパディングを調整 */
+@media (max-width: 768px) {
+    .custom-footer {
+        padding: 30px 20px !important;
+        font-size: 0.8rem !important;
+    }
 }
 
 /* ============================================================

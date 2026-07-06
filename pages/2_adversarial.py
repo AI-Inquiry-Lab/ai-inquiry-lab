@@ -7,8 +7,16 @@ import base64
 import matplotlib
 import matplotlib.pyplot as plt
 from utils.nav import render_top_nav
+from utils.icons import svg_icon, heading
 
-matplotlib.rcParams['font.family'] = 'DejaVu Sans'
+# 日本語グリフ対応: CJKフォントを優先し、無ければ順にフォールバックする
+# (Windows: Yu Gothic/Meiryo, Linux/Docker: fonts-noto-cjk 導入時の Noto Sans CJK JP)
+matplotlib.rcParams['font.family'] = 'sans-serif'
+matplotlib.rcParams['font.sans-serif'] = [
+    'Noto Sans CJK JP', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', 'MS Gothic',
+    'IPAexGothic', 'TakaoPGothic', 'DejaVu Sans',
+]
+matplotlib.rcParams['axes.unicode_minus'] = False
 
 try:
     import torch
@@ -23,7 +31,7 @@ except ImportError:
 # ================================================================
 st.set_page_config(
     page_title="ミッション02: AI騙し | AI Inquiry Lab",
-    page_icon="🎭",
+    page_icon=":material/theater_comedy:",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -56,33 +64,58 @@ CSS_FILE   = os.path.join(ASSETS_DIR, "style.css")
 
 
 ATTACK_INFO = {
-    "🌪️ ガウスノイズ": {
+    "ガウスノイズ": {
         "key": "gaussian",
+        "icon": "wind",
+        "color": "#0284c7",
         "desc": "ランダムなノイズを全ピクセルに加算。自然界の撮影ノイズに似た形状で、シンプルかつ汎用的な攻撃手法です。",
     },
-    "🧂 塩コショウ": {
+    "塩コショウ": {
         "key": "salt_pepper",
+        "icon": "sparkles",
+        "color": "#c026d3",
         "desc": "ランダムに白（塩）と黒（胡椒）の点を散りばめます。デジタル信号の欠損ノイズを再現した古典的な手法です。",
     },
-    "⚡ 疑似FGSM": {
+    "疑似FGSM": {
         "key": "pseudo_fgsm",
+        "icon": "zap",
+        "color": "#b45309",
         "desc": "画像の「エッジ（境目）」の方向に沿った構造的なノイズ。本物のFGSMが利用する勾配方向を近似した、最も賢い攻撃です。",
     },
-    "🌈 カラーシフト": {
+    "カラーシフト": {
         "key": "color_shift",
+        "icon": "image",
+        "color": "#059669",
         "desc": "赤・緑・青の各色成分を微妙にずらします。人間の目には色が同じに見えても、AIの数値判断を混乱させます。",
     },
+}
+
+# 攻撃キー → 表示情報（リーダーボード用の逆引き）
+ATTACK_BY_KEY = {info["key"]: {"name": name, **info} for name, info in ATTACK_INFO.items()}
+
+# 攻撃対象に選べるベース画像（DATA_DIR に存在するもののみ後段でフィルタ）
+ADV_BASE_IMAGES = {
+    "bird.jpg":       "鳥",
+    "cat.jpg":        "猫",
+    "building.jpg":   "建物",
+    "mountain.jpg":   "山",
+    "soccerball.jpg": "サッカーボール",
+    "hyousiki.jpg":   "道路標識",
 }
 
 # ================================================================
 # SECTION 3: ユーティリティ関数
 # ================================================================
+@st.cache_data
+def _read_css_text(path: str) -> str:
+    with open(path, encoding="utf-8") as f:
+        return f.read()
+
 def load_css(path: str) -> None:
     if os.path.exists(path):
-        with open(path, encoding="utf-8") as f:
-            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+        st.markdown(f"<style>{_read_css_text(path)}</style>", unsafe_allow_html=True)
     else:
-        st.warning(f"⚠️ CSSファイルが見つかりません: {path}")
+        st.warning(f"CSSファイルが見つかりません: {path}")
 
 def get_image_as_base64(path: str) -> str:
     try:
@@ -105,8 +138,11 @@ if TORCH_AVAILABLE:
 else:
     _model, _categories, _preprocess = None, [], None
 
+@st.cache_data(show_spinner=False)
 def predict_image(img_array: np.ndarray) -> tuple:
-    """画像をAIに推論させ (ラベル, 確信度, Top5リスト) を返す"""
+    """画像をAIに推論させ (ラベル, 確信度, Top5リスト) を返す。
+    同じ画像に対する推論結果はキャッシュし、無関係な操作での再実行のたびに
+    重いモデル推論をやり直さないようにする（_model/_preprocessはロード後不変）。"""
     if not TORCH_AVAILABLE or _model is None:
         return "AI利用不可", 0.0, []
     img_pil = Image.fromarray(img_array.astype(np.uint8))
@@ -184,36 +220,41 @@ def judge_deception(
     conf_drop     = orig_conf - pert_conf
 
     if label_changed and conf_drop > 30:
-        return "🎉 大成功！AIを完全に騙した！",      "#05ffa1"
+        return (svg_icon("sparkles", size=22, color="#059669") +
+                " 大成功！AIを完全に騙した！"), "#059669"
     elif label_changed:
-        return "✅ 成功！AIが別の物を見ている！",    "#05ffa1"
+        return (svg_icon("check-circle", size=22, color="#059669") +
+                " 成功！AIが別の物を見ている！"), "#059669"
     elif conf_drop > 20:
-        return "⚠️ 部分成功！AIが迷い始めている！",  "#ffd700"
+        return (svg_icon("alert-triangle", size=22, color="#b45309") +
+                " 部分成功！AIが迷い始めている！"), "#b45309"
     elif conf_drop > 5:
-        return "🔄 惜しい！AIが揺れている",          "#00d4ff"
+        return (svg_icon("refresh-cw", size=22, color="#0284c7") +
+                " 惜しい！AIが揺れている"), "#0284c7"
     else:
-        return "🛡️ 失敗…AIは騙せなかった",           "#ff4555"
+        return (svg_icon("shield", size=22, color="#dc2626") +
+                " 失敗…AIは騙せなかった"), "#dc2626"
 
 def draw_confidence_bar(top5: list, highlight_label: str, bar_color: str) -> plt.Figure:
     """Top-5確信度の横棒グラフを生成して返す"""
     labels = [f"{l[:18]}..." if len(l) > 18 else l for l, _ in top5][::-1]
     values = [v for _, v in top5][::-1]
     fig, ax = plt.subplots(figsize=(5, 3.2))
-    fig.patch.set_facecolor("#1e2a3a")
-    ax.set_facecolor("#1e2a3a")
+    fig.patch.set_facecolor("#ffffff")
+    ax.set_facecolor("#ffffff")
     bars = ax.barh(labels, values, color=[
-        "#ff71ce" if (labels[::-1][i] == highlight_label or
+        "#c026d3" if (labels[::-1][i] == highlight_label or
                       (labels[::-1][i] + "...") == highlight_label[:18] + "...")
         else bar_color
         for i in range(len(labels))
     ][::-1])
     ax.set_xlim(0, 100)
-    ax.tick_params(colors="#e6edf3", labelsize=8)
+    ax.tick_params(colors="#000000", labelsize=8)
     for spine in ax.spines.values():
-        spine.set_color("#3d5a8a")
+        spine.set_color("#cbd5e1")
     for bar, val in zip(bars, values):
         ax.text(min(val + 1, 95), bar.get_y() + bar.get_height() / 2,
-                f"{val:.1f}%", va="center", color="#e6edf3", fontsize=7)
+                f"{val:.1f}%", va="center", color="#000000", fontsize=7)
     plt.tight_layout(pad=0.5)
     return fig
 
@@ -224,9 +265,9 @@ load_css(CSS_FILE)
 
 render_top_nav("adversarial")
 
-st.markdown("""
+st.markdown(f"""
 <div class="main-title-container">
-    <h1 class="main-title-text">🎭 AI騙し</h1>
+    <h1 class="main-title-text">{svg_icon("mask", size=30, color="#c026d3")} AI騙し</h1>
     <p class="sub-title-text">MISSION 02 — 微小な「嘘」でAIの認識を崩壊させろ</p>
 </div>
 """, unsafe_allow_html=True)
@@ -237,38 +278,55 @@ st.markdown("""
 if "best_score_2" not in st.session_state:
     st.session_state["best_score_2"] = 0
 
+# 攻撃タイプ別リーダーボード（このページ専用。キーは _adv2 で衝突回避）
+if "adv_leaderboard" not in st.session_state:
+    # 例: {"gaussian": {"score": 120, "conf_drop": 30.1, "visibility": 0.42}}
+    st.session_state["adv_leaderboard"] = {}
+
+if "adv_full_clear_done_adv2" not in st.session_state:
+    st.session_state["adv_full_clear_done_adv2"] = False
+
 # ================================================================
 # SECTION 8: サイドバー（攻撃設定センター）
 # ================================================================
 with st.sidebar:
-    st.markdown("""
+    st.markdown(f"""
     <div class="access-key-box">
         <span style="font-size:0.65rem; color:#64748b;">MISSION STATUS</span><br>
-        <span style="color:#ff71ce; font-weight:bold; font-size:0.9rem;">🎭 AI HACKING MODE</span>
+        <span style="color:#c026d3; font-weight:bold; font-size:0.9rem;">
+            {svg_icon("mask", size=15, color="#c026d3")} AI HACKING MODE
+        </span>
     </div>
     """, unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
 
     selected_attack_name = st.selectbox(
-        "🗡️ 攻撃タイプを選択",
+        "攻撃タイプを選択",
         list(ATTACK_INFO.keys()),
         key="attack_select"
     )
     selected_attack_key  = ATTACK_INFO[selected_attack_name]["key"]
 
-    attack_strength = st.slider("💪 攻撃強度", min_value=1, max_value=100, value=20)
+    attack_strength = st.slider("攻撃強度", min_value=1, max_value=100, value=20)
 
     st.divider()
-    st.info(f"💡 **{selected_attack_name}**\n\n{ATTACK_INFO[selected_attack_name]['desc']}")
+    st.info(
+        f"**{selected_attack_name}**\n\n{ATTACK_INFO[selected_attack_name]['desc']}",
+    )
 
     st.divider()
-    st.markdown("### 🧭 Navigation")
-    st.page_link("main_app.py",              label="司令室 (Home)",         icon="🏠")
-    st.page_link("pages/1_vision.py",        label="ミッション01: AIの目",  icon="👁️")
-    st.page_link("pages/2_adversarial.py",   label="ミッション02: AI騙し",  icon="🎭")
-    st.page_link("pages/3_training.py",      label="ミッション03: AI育成",  icon="🧬")
+    st.markdown(heading("Navigation", "compass", level=3), unsafe_allow_html=True)
+    st.page_link("main_app.py",                      label="司令室 (Home)")
+    st.page_link("pages/1_vision.py",                label="ミッション01: AIの目")
+    st.page_link("pages/2_adversarial.py",           label="ミッション02: AI騙し")
+    st.page_link("pages/3_training.py",              label="ミッション03: AI育成")
+    st.page_link("pages/4_llm_mechanism.py",         label="ミッション04: LLMの脳内")
+    st.page_link("pages/5_cpu_gpu.py",               label="ミッション05: CPU対GPU")
+    st.page_link("pages/6_physical_digital_ai.py",   label="ミッション06: AIの二形態")
+    st.page_link("pages/7_rl_game.py",                label="ミッション07: 育成ゲーム")
+    st.page_link("pages/8_machine_learning.py",      label="ミッション08: 機械学習の仕組み")
     st.divider()
-    st.success("🛡️ SHIELD: ONLINE")
+    st.success("SHIELD: ONLINE")
 
 # ================================================================
 # SECTION 9: 画像ロード（固定: 鳥の画像を使用）
@@ -279,7 +337,7 @@ target_image = Image.open(bird_path).convert("RGB")
 # ================================================================
 # SECTION 10: メインコンテンツ（4タブ構成）
 # ================================================================
-st.header("🧪 ミッション開始")
+st.markdown(heading("ミッション開始", "flask", level=2), unsafe_allow_html=True)
 
 tab1, tab2, tab3, tab4 = st.tabs([
     "① AIの弱点を知る",
@@ -292,22 +350,22 @@ tab1, tab2, tab3, tab4 = st.tabs([
 # TAB 1: AIの弱点を知る
 # ---------------------------------------------------------------
 with tab1:
-    st.header("🧠 なぜAIは騙されるのか？")
+    st.markdown(heading("なぜAIは騙されるのか？", "brain", level=2), unsafe_allow_html=True)
 
     with st.container():
         st.markdown('<div class="lab-anchor-green"></div>', unsafe_allow_html=True)
 
         col_text, col_box = st.columns([3, 2])
         with col_text:
-            st.markdown("""
+            st.markdown(f"""
             <div class="explanation-box">
-            <h3>🎭 AIと人間の「見え方」の根本的な違い</h3>
+            <h3>{svg_icon("mask", color="#0284c7")} AIと人間の「見え方」の根本的な違い</h3>
             人間は物体の<b>「形（シルエット）」</b>を見て直感的に判断します。
             パンダを見るとき、黒と白のパターン・丸い体形・耳の形を無意識に総合して判断しています。<br><br>
             しかし現代のAI（畳み込みニューラルネットワーク）は、<b>「テクスチャ（模様・質感）」</b>に
             強く依存して判断する傾向があります。
 
-            <h3>💥 ほんの少しの変化で騙せる理由</h3>
+            <h3>{svg_icon("zap", color="#0284c7")} ほんの少しの変化で騙せる理由</h3>
             AIが判断に使っている数値は、人間の目には見えないほど微小な変化に<b>極めて敏感</b>です。<br>
             画像全体の変化量がわずか<b>0.007%</b>のノイズを加えるだけで、AIの内部計算が狂い、
             全く別の物体として認識してしまうことがあります。
@@ -315,79 +373,79 @@ with tab1:
             """, unsafe_allow_html=True)
 
         with col_box:
-            st.markdown("""
-            <div style="background:#0d1117; border:2px solid #00d4ff; padding:20px;
-                        font-family:monospace; border-left:6px solid #ff71ce;">
-                <div style="color:#ffd700; font-weight:bold; margin-bottom:12px;">
-                    ▶ ADVERSARIAL DEMO
+            st.markdown(f"""
+            <div style="background:#eef2fb; border:2px solid #0284c7; padding:20px;
+                        font-family:monospace; border-left:6px solid #c026d3;">
+                <div style="color:#b45309; font-weight:bold; margin-bottom:12px;">
+                    {svg_icon("play", size=14, color="#b45309")} ADVERSARIAL DEMO
                 </div>
-                <div style="color:#05ffa1;">元画像: 🐼 パンダ</div>
-                <div style="color:#e6edf3; margin:4px 0;">確信度: 99.3%</div>
+                <div style="color:#059669;">元画像: パンダ</div>
+                <div style="color:#000000; margin:4px 0;">確信度: 99.3%</div>
                 <br>
-                <div style="color:#ff4555; font-size:1.3rem;">＋ ε ノイズ</div>
-                <div style="color:#8b9ab0; font-size:0.8rem;">（人間には見えない変化量）</div>
+                <div style="color:#dc2626; font-size:1.3rem;">＋ ε ノイズ</div>
+                <div style="color:#64748b; font-size:0.8rem;">（人間には見えない変化量）</div>
                 <br>
-                <div style="color:#05ffa1;">↓ AIの判定が変わる</div>
+                <div style="color:#059669;">↓ AIの判定が変わる</div>
                 <br>
-                <div style="color:#ff71ce; font-weight:bold;">認識結果: テナガザル 🦧</div>
-                <div style="color:#e6edf3; margin:4px 0;">確信度: 94.1%</div>
+                <div style="color:#c026d3; font-weight:bold;">認識結果: テナガザル</div>
+                <div style="color:#000000; margin:4px 0;">確信度: 94.1%</div>
                 <br>
-                <div style="border-top:1px solid #3d5a8a; padding-top:10px;
-                            color:#8b9ab0; font-size:0.78rem;">
+                <div style="border-top:1px solid #cbd5e1; padding-top:10px;
+                            color:#64748b; font-size:0.78rem;">
                     ← Goodfellow et al., 2014<br>
                     最初に発見された対抗的サンプル
                 </div>
             </div>
             """, unsafe_allow_html=True)
 
-    st.header("📊 AIが騙される3つの根本理由")
+    st.markdown(heading("AIが騙される3つの根本理由", "bar-chart", level=2), unsafe_allow_html=True)
     with st.container():
         st.markdown('<div class="lab-anchor-green"></div>', unsafe_allow_html=True)
 
         c1, c2, c3 = st.columns(3)
         with c1:
-            st.markdown("""
+            st.markdown(f"""
             <div class="guide-box">
-                <h4>🎨 テクスチャ偏重</h4>
+                <h4>{svg_icon("image", color="#0284c7")} テクスチャ偏重</h4>
                 <p>CNNは模様・質感を過度に重視します。
                 「ゾウの皮膚の質感」でゾウと判断するため、
                 質感を少し変えるだけで騙せます。</p>
             </div>
             """, unsafe_allow_html=True)
         with c2:
-            st.markdown("""
+            st.markdown(f"""
             <div class="guide-box">
-                <h4>🔢 高次元の脆弱性</h4>
+                <h4>{svg_icon("layers", color="#0284c7")} 高次元の脆弱性</h4>
                 <p>画像は数百万次元の空間で表現されます。
                 人間には見えない方向へほんの少し動かすだけで
                 AIの「判断境界線」を越えられます。</p>
             </div>
             """, unsafe_allow_html=True)
         with c3:
-            st.markdown("""
+            st.markdown(f"""
             <div class="guide-box">
-                <h4>⚡ 勾配の逆用</h4>
+                <h4>{svg_icon("zap", color="#0284c7")} 勾配の逆用</h4>
                 <p>AIは「どの方向に変化させると最も迷うか」を
                 計算できます。攻撃者はこれを逆用して
                 最小限の変化で最大の混乱を引き起こします。</p>
             </div>
             """, unsafe_allow_html=True)
 
-    st.header("🧩 人間 vs AI — 認識の仕組み比較")
+    st.markdown(heading("人間 vs AI — 認識の仕組み比較", "puzzle", level=2), unsafe_allow_html=True)
     with st.container():
         st.markdown('<div class="lab-anchor-green"></div>', unsafe_allow_html=True)
 
         comp_cols = st.columns(2)
         with comp_cols[0]:
-            st.markdown("""
-            <div style="background:#1e2a3a; border:2px solid #05ffa1;
-                        border-left:6px solid #05ffa1; padding:18px;">
-                <h3 style="color:#05ffa1; background:transparent !important;
+            st.markdown(f"""
+            <div style="background:#ffffff; border:2px solid #059669;
+                        border-left:6px solid #059669; padding:18px;">
+                <h3 style="color:#059669; background:transparent !important;
                            border:none !important; padding:0 !important;
                            box-shadow:none !important; margin:0 0 12px 0;">
-                    🧑 人間の認識
+                    {svg_icon("users", size=20, color="#059669")} 人間の認識
                 </h3>
-                <ul style="color:#e6edf3; line-height:2;">
+                <ul style="color:#000000; line-height:2;">
                     <li>形・シルエットを重視</li>
                     <li>少々ノイズがあっても正しく認識</li>
                     <li>文脈・前後関係から推測</li>
@@ -396,15 +454,15 @@ with tab1:
             </div>
             """, unsafe_allow_html=True)
         with comp_cols[1]:
-            st.markdown("""
-            <div style="background:#1e2a3a; border:2px solid #ff71ce;
-                        border-left:6px solid #ff71ce; padding:18px;">
-                <h3 style="color:#ff71ce; background:transparent !important;
+            st.markdown(f"""
+            <div style="background:#ffffff; border:2px solid #c026d3;
+                        border-left:6px solid #c026d3; padding:18px;">
+                <h3 style="color:#c026d3; background:transparent !important;
                            border:none !important; padding:0 !important;
                            box-shadow:none !important; margin:0 0 12px 0;">
-                    🤖 AIの認識
+                    {svg_icon("bot", size=20, color="#c026d3")} AIの認識
                 </h3>
-                <ul style="color:#e6edf3; line-height:2;">
+                <ul style="color:#000000; line-height:2;">
                     <li>テクスチャ・模様を重視</li>
                     <li>微小な数値変化に過敏</li>
                     <li>文脈を持たず数値のみで判断</li>
@@ -413,40 +471,40 @@ with tab1:
             </div>
             """, unsafe_allow_html=True)
 
-    st.header("🔬 AIの弱点を実際に体験してみよう！")
+    st.markdown(heading("AIの弱点を実際に体験してみよう！", "microscope", level=2), unsafe_allow_html=True)
     with st.container():
         st.markdown('<div class="lab-anchor-green"></div>', unsafe_allow_html=True)
 
         img_arr_weak = np.array(target_image.resize((400, 400)))
 
         experiment = st.radio(
-            "🔬 試してみる弱点を選択：",
-            ["🌪️ ノイズ耐性", "🔄 回転耐性", "🌗 コントラスト依存"],
+            "試してみる弱点を選択：",
+            ["ノイズ耐性", "回転耐性", "コントラスト依存"],
             horizontal=True,
             key="weakness_exp"
         )
 
         test_img = img_arr_weak.copy()
 
-        if "🌪️" in experiment:
+        if experiment == "ノイズ耐性":
             noise_level = st.slider("ノイズ強度（大きいほど荒くなる）", 0, 128, 20, key="noise_slider_w")
             if noise_level > 0:
                 noise    = np.random.normal(0, noise_level, img_arr_weak.shape)
                 test_img = np.clip(img_arr_weak.astype(np.float32) + noise, 0, 255).astype(np.uint8)
-            st.caption("💡 高周波ノイズはCNNの特徴抽出を破壊します。")
+            st.caption("高周波ノイズはCNNの特徴抽出を破壊します。")
 
-        elif "🔄" in experiment:
+        elif experiment == "回転耐性":
             angle = st.slider("回転角度（度）", 0, 180, 45, key="rotate_slider_w")
             if angle > 0:
                 h, w     = img_arr_weak.shape[:2]
                 M        = cv2.getRotationMatrix2D((w / 2, h / 2), angle, 1)
                 test_img = cv2.warpAffine(img_arr_weak, M, (w, h))
-            st.caption("💡 多くのCNNは回転不変性を完全には持ちません。")
+            st.caption("多くのCNNは回転不変性を完全には持ちません。")
 
         else:
             contrast = st.slider("コントラスト倍率", 0.1, 2.0, 0.3, step=0.05, key="contrast_slider_w")
             test_img = cv2.convertScaleAbs(img_arr_weak, alpha=contrast, beta=0)
-            st.caption("💡 低コントラストはエッジ情報を弱め、AIを迷わせます。")
+            st.caption("低コントラストはエッジ情報を弱め、AIを迷わせます。")
 
         col_orig_w, col_test_w = st.columns(2)
 
@@ -477,21 +535,61 @@ with tab1:
 
         if TORCH_AVAILABLE:
             if orig_lbl_w != test_lbl_w:
-                st.error(f"⚠️ AIが「{orig_lbl_w}」→「{test_lbl_w}」へ誤認識しました！")
+                st.error(f"AIが「{orig_lbl_w}」→「{test_lbl_w}」へ誤認識しました！")
             elif abs(orig_pct_w - test_pct_w) > 10:
-                st.warning(f"⚠️ AIの確信度が{abs(orig_pct_w - test_pct_w):.1f}%も変化しました！")
+                st.warning(f"AIの確信度が{abs(orig_pct_w - test_pct_w):.1f}%も変化しました！")
             else:
-                st.success("✅ AIはまだ正確に認識しています。スライダーを動かして攻撃を強めてみよう！")
+                st.success("AIはまだ正確に認識しています。スライダーを動かして攻撃を強めてみよう！")
         else:
-            st.info("💡 ② 騙しシミュレーター タブでAIへの実際の影響を体験できます！")
+            st.info("② 騙しシミュレーター タブでAIへの実際の影響を体験できます！")
 
 # ---------------------------------------------------------------
 # TAB 2: 騙しシミュレーター
 # ---------------------------------------------------------------
 with tab2:
-    st.header("🎮 AI騙しチャレンジ！")
+    st.markdown(heading("AI騙しチャレンジ！", "gamepad", level=2), unsafe_allow_html=True)
 
-    img_array = np.array(target_image.resize((400, 400)))
+    # ===== ベース画像ピッカー =====
+    # DATA_DIR に実在するファイルだけを候補にする（欠損は静かに除外）
+    available_bases = {
+        fname: jp for fname, jp in ADV_BASE_IMAGES.items()
+        if os.path.exists(os.path.join(DATA_DIR, fname))
+    }
+    if available_bases:
+        picker_col, hint_col = st.columns([2, 3])
+        with picker_col:
+            base_fname = st.selectbox(
+                "攻撃するベース画像を選ぶ",
+                list(available_bases.keys()),
+                format_func=lambda f: f"{available_bases[f]}（{f}）",
+                key="adv_base_img_select_adv2",
+            )
+        try:
+            sim_image = Image.open(os.path.join(DATA_DIR, base_fname)).convert("RGB")
+        except Exception:
+            sim_image = target_image
+            base_fname = "bird.jpg"
+        with hint_col:
+            if base_fname == "hyousiki.jpg":
+                st.markdown(f"""
+                <div class="explanation-box" style="margin:0;">
+                <h3>{svg_icon("alert-triangle", color="#0284c7")} 道路標識で試すと？</h3>
+                この標識画像で攻撃を試すと、<b>実際の自動運転車がなぜ危険にさらされるか</b>がより実感できます。
+                「③ 攻撃の仕組み」タブの<b>自動運転への脅威</b>と合わせて確かめてみよう。
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown(f"""
+                <div class="explanation-box" style="margin:0;">
+                <h3>{svg_icon("image", color="#0284c7")} 画像を変えて実験</h3>
+                被写体を変えると、攻撃の効きやすさが変わります。<b>道路標識</b>を選ぶと、
+                自動運転を狙った現実の攻撃を体験できます。
+                </div>
+                """, unsafe_allow_html=True)
+    else:
+        sim_image = target_image
+
+    img_array = np.array(sim_image.resize((400, 400)))
 
     # --- 攻撃を実行 ---
     perturbed_array = apply_attack(img_array, selected_attack_key, attack_strength)
@@ -549,7 +647,7 @@ with tab2:
 
     # ===== 騙し判定バナー =====
     st.markdown(f"""
-    <div style="background:#1e2a3a; border:3px solid {result_color};
+    <div style="background:#ffffff; border:3px solid {result_color};
                 border-left:10px solid {result_color}; padding:20px 24px;
                 text-align:center; margin:20px 0; box-shadow:6px 6px 0px #000;">
         <span style="color:{result_color}; font-size:1.4rem; font-weight:bold;
@@ -561,26 +659,26 @@ with tab2:
 
     # ===== 確信度グラフ =====
     if TORCH_AVAILABLE and orig_top5 and pert_top5:
-        st.header("📊 AIの確信度の変化")
+        st.markdown(heading("AIの確信度の変化", "bar-chart", level=2), unsafe_allow_html=True)
         with st.container():
             st.markdown('<div class="lab-anchor-green"></div>', unsafe_allow_html=True)
 
             chart_col_l, chart_col_r = st.columns(2)
             with chart_col_l:
                 st.markdown("**元画像に対する判定 Top-5**")
-                fig = draw_confidence_bar(orig_top5, orig_label, "#00d4ff")
+                fig = draw_confidence_bar(orig_top5, orig_label, "#0284c7")
                 st.markdown('<span class="sim-chart-marker"></span>', unsafe_allow_html=True)
                 st.pyplot(fig)
                 plt.close(fig)
             with chart_col_r:
                 st.markdown("**攻撃後の画像に対する判定 Top-5**")
-                fig = draw_confidence_bar(pert_top5, orig_label, "#ff4555")
+                fig = draw_confidence_bar(pert_top5, orig_label, "#dc2626")
                 st.markdown('<span class="sim-chart-marker"></span>', unsafe_allow_html=True)
                 st.pyplot(fig)
                 plt.close(fig)
 
     # ===== スコアシステム =====
-    st.header("🏆 騙し効率スコア")
+    st.markdown(heading("騙し効率スコア", "trophy", level=2), unsafe_allow_html=True)
     with st.container():
         st.markdown('<div class="lab-anchor-green"></div>', unsafe_allow_html=True)
 
@@ -592,18 +690,30 @@ with tab2:
             sc1, sc2, sc3 = st.columns(3)
             sc1.metric("確信度ダメージ",           f"{conf_drop:.1f}%")
             sc2.metric("ノイズ視認性（低いほど優秀）", f"{visibility:.3f}%")
-            sc3.metric("🏆 効率スコア",             f"{total_score} pts")
+            sc3.metric("効率スコア",               f"{total_score} pts")
 
             if total_score > st.session_state["best_score_2"]:
                 st.session_state["best_score_2"] = total_score
                 if total_score > 10:
                     st.balloons()
 
-            st.info(f"🥇 今回の最高スコア：**{st.session_state['best_score_2']} pts**")
+            # --- 攻撃タイプ別リーダーボードを更新 ---
+            board = st.session_state["adv_leaderboard"]
+            prev  = board.get(selected_attack_key)
+            if prev is None or total_score > prev["score"]:
+                board[selected_attack_key] = {
+                    "score":      total_score,
+                    "conf_drop":  conf_drop,
+                    "visibility": visibility,
+                }
 
-            st.markdown("""
+            st.info(
+                f"今回の最高スコア：**{st.session_state['best_score_2']} pts**",
+            )
+
+            st.markdown(f"""
             <div class="explanation-box">
-            <h3>💡 スコアの計算式</h3>
+            <h3>{svg_icon("lightbulb", color="#0284c7")} スコアの計算式</h3>
             <b>スコア = (確信度下落幅 ÷ ノイズ視認性) × 10 ＋ ラベル変更ボーナス（+200）</b><br><br>
             目標は「人間が気付かないほど小さいノイズで、AIに大きなダメージを与えること」。<br>
             これは本物の対抗的サンプル攻撃の目的と全く同じです。
@@ -613,23 +723,94 @@ with tab2:
         else:
             st.warning("PyTorch が利用できないためAI確信度は計算できません。画像の変化を目で楽しんでください！")
 
+    # ===== 攻撃タイプ別リーダーボード =====
+    st.markdown(heading("攻撃タイプ別リーダーボード", "trophy", level=2), unsafe_allow_html=True)
+    with st.container():
+        st.markdown('<div class="lab-anchor-green"></div>', unsafe_allow_html=True)
+
+        # このページ限定の小さなスコープ付きスタイル（assets/style.css は触らない方針）
+        st.markdown("""
+        <style>
+        .adv-lb-card { background:var(--bg-card); border:2px solid var(--border-main);
+                       border-left:6px solid var(--color-cyan); padding:12px 14px;
+                       box-shadow:4px 4px 0px #000; min-height:150px; }
+        .adv-lb-card.locked-card { border-left-color:var(--border-dim) !important; }
+        .adv-lb-title { display:flex; align-items:center; gap:0.4em; font-weight:bold;
+                        font-size:0.9rem; margin-bottom:8px; }
+        .adv-lb-score { font-family:var(--font-mono); color:var(--color-yellow);
+                        font-size:1.5rem; font-weight:900; line-height:1.1; }
+        .adv-lb-row   { color:var(--text-dim); font-size:0.74rem; font-family:var(--font-mono);
+                        margin-top:4px; }
+        .adv-lb-locked-msg { color:var(--text-dim); font-size:0.8rem; margin-top:6px; }
+        </style>
+        """, unsafe_allow_html=True)
+
+        board = st.session_state["adv_leaderboard"]
+        lb_cols = st.columns(4)
+        for col, (key, meta) in zip(lb_cols, ATTACK_BY_KEY.items()):
+            entry = board.get(key)
+            with col:
+                if entry is not None:
+                    st.markdown(f"""
+                    <div class="adv-lb-card">
+                        <div class="adv-lb-title" style="color:{meta['color']};">
+                            {svg_icon(meta['icon'], size=16, color=meta['color'])}{meta['name']}
+                        </div>
+                        <div class="adv-lb-score">{entry['score']}<span style="font-size:0.7rem;"> pts</span></div>
+                        <div class="adv-lb-row">確信度ダメージ {entry['conf_drop']:.1f}%</div>
+                        <div class="adv-lb-row">ノイズ視認性 {entry['visibility']:.3f}%</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    st.markdown(f"""
+                    <div class="adv-lb-card locked-card">
+                        <div class="adv-lb-title" style="color:var(--text-dim);">
+                            {svg_icon("lock", size=16, color="#64748b")}{meta['name']}
+                        </div>
+                        <div class="adv-lb-locked-msg">未挑戦<br>この攻撃タイプをまだ試していません。</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+        tried    = len(board)
+        remaining = [m["name"] for k, m in ATTACK_BY_KEY.items() if k not in board]
+        st.progress(tried / len(ATTACK_BY_KEY))
+
+        if tried >= len(ATTACK_BY_KEY):
+            if not st.session_state["adv_full_clear_done_adv2"]:
+                st.session_state["adv_full_clear_done_adv2"] = True
+                st.balloons()
+            st.success("完全制覇！4種類すべての攻撃タイプを記録しました。")
+            st.markdown(f"""
+            <div class="explanation-box">
+            <h3>{svg_icon("shield", color="#0284c7")} なぜ「多様な攻撃」で試すのか</h3>
+            現実のAIロバストネス評価（adversarial robustness testing）では、
+            <b>1種類の攻撃だけでなく、性質の異なる多数の攻撃手法</b>でモデルを検証します。
+            ある攻撃には強くても別の攻撃には脆い、というのはよくあること。
+            4タイプすべてを試したあなたは、まさに本物のセキュリティ評価者と同じ視点を持てました！
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.info(
+                f"完全制覇まであと{len(remaining)}種類！未挑戦：{'、'.join(remaining)}",
+            )
+
 # ---------------------------------------------------------------
 # TAB 3: 攻撃の仕組み
 # ---------------------------------------------------------------
 with tab3:
-    st.header("⚡ 敵対的攻撃の仕組み")
+    st.markdown(heading("敵対的攻撃の仕組み", "zap", level=2), unsafe_allow_html=True)
 
     with st.container():
         st.markdown('<div class="lab-anchor-green"></div>', unsafe_allow_html=True)
 
-        st.markdown("""
+        st.markdown(f"""
         <div class="explanation-box">
-        <h3>🔬 FGSM とは何か？（Fast Gradient Sign Method）</h3>
+        <h3>{svg_icon("microscope", color="#0284c7")} FGSM とは何か？（Fast Gradient Sign Method）</h3>
         FGSMは2014年にGoogleのGoodfellow氏らが発見した、AIを最も効率よく騙す攻撃手法です。<br>
         その数式はシンプルです：
 
-        <div style="background:#0d1117; border:2px solid #ffd700; padding:16px; margin:14px 0;
-                    font-family:monospace; color:#ffd700; font-size:1.1rem; text-align:center;
+        <div style="background:#eef2fb; border:2px solid #b45309; padding:16px; margin:14px 0;
+                    font-family:monospace; color:#b45309; font-size:1.1rem; text-align:center;
                     letter-spacing:0.05em;">
             x_adv = x + ε × sign( ∇ₓ J(θ, x, y) )
         </div>
@@ -644,34 +825,38 @@ with tab3:
         </div>
         """, unsafe_allow_html=True)
 
-    st.header("🗺️ 攻撃手法の分類図鑑")
+    st.markdown(heading("攻撃手法の分類図鑑", "map", level=2), unsafe_allow_html=True)
     with st.container():
         st.markdown('<div class="lab-anchor-green"></div>', unsafe_allow_html=True)
 
         attack_cards = [
             {
-                "name": "🌪️ ランダムノイズ",
+                "name": "ランダムノイズ",
+                "icon": "wind",
                 "badge": "ブラックボックス攻撃",
                 "desc": "モデルの内部情報が不要なシンプルな攻撃。誰でも実行できるが効率は低い。",
-                "color": "#00d4ff",
+                "color": "#0284c7",
             },
             {
-                "name": "⚡ FGSM",
+                "name": "FGSM",
+                "icon": "zap",
                 "badge": "ホワイトボックス攻撃",
                 "desc": "モデルの勾配情報を活用した高効率攻撃。少ないノイズで最大のダメージ。研究の基準手法。",
-                "color": "#ff71ce",
+                "color": "#c026d3",
             },
             {
-                "name": "🎯 標的型攻撃（Targeted）",
+                "name": "標的型攻撃（Targeted）",
+                "icon": "target",
                 "badge": "高度ホワイトボックス",
                 "desc": "「パンダ→テナガザル」のように特定の誤分類を狙う攻撃。より多くの計算が必要。",
-                "color": "#ffd700",
+                "color": "#b45309",
             },
             {
-                "name": "🖨️ 物理的攻撃",
+                "name": "物理的攻撃",
+                "icon": "printer",
                 "badge": "リアルワールド攻撃",
                 "desc": "プリントしたパターンをカメラに見せる攻撃。自動運転の標識認識や顔認証を物理的に騙せる。",
-                "color": "#ff4555",
+                "color": "#dc2626",
             },
         ]
 
@@ -680,49 +865,50 @@ with tab3:
             target_col = card_col_l if i % 2 == 0 else card_col_r
             with target_col:
                 st.markdown(f"""
-                <div style="background:#1e2a3a; border:2px solid {card['color']};
+                <div style="background:#ffffff; border:2px solid {card['color']};
                             border-left:6px solid {card['color']}; padding:16px;
                             margin-bottom:16px; box-shadow:4px 4px 0px #000;">
                     <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
-                        <span style="color:{card['color']}; font-weight:bold; font-size:1rem;">
-                            {card['name']}
+                        <span style="color:{card['color']}; font-weight:bold; font-size:1rem;
+                                     display:inline-flex; align-items:center; gap:0.4em;">
+                            {svg_icon(card['icon'], size=16, color=card['color'])}{card['name']}
                         </span>
-                        <span style="background:#263548; color:#8b9ab0; padding:2px 8px;
+                        <span style="background:#e7ecf5; color:#64748b; padding:2px 8px;
                                      font-size:0.72rem; font-family:monospace;">
                             {card['badge']}
                         </span>
                     </div>
-                    <p style="color:#e6edf3; font-size:0.88rem; margin:0; line-height:1.7;">
+                    <p style="color:#000000; font-size:0.88rem; margin:0; line-height:1.7;">
                         {card['desc']}
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
 
-    st.header("🚨 現実世界への脅威")
+    st.markdown(heading("現実世界への脅威", "alert-triangle", level=2), unsafe_allow_html=True)
     with st.container():
         st.markdown('<div class="lab-anchor-green"></div>', unsafe_allow_html=True)
 
         threat_c1, threat_c2, threat_c3 = st.columns(3)
         with threat_c1:
-            st.markdown("""
+            st.markdown(f"""
             <div class="guide-box">
-                <h4>🚗 自動運転</h4>
+                <h4>{svg_icon("alert-triangle", color="#0284c7")} 自動運転</h4>
                 <p>道路の「一時停止」標識に特殊なシールを貼ると、AIが「時速45マイル制限」と
                 誤認識する実験が報告されています。高速での事故につながりかねない深刻な問題です。</p>
             </div>
             """, unsafe_allow_html=True)
         with threat_c2:
-            st.markdown("""
+            st.markdown(f"""
             <div class="guide-box">
-                <h4>🏦 顔認証</h4>
+                <h4>{svg_icon("glasses", color="#0284c7")} 顔認証</h4>
                 <p>特殊なパターンを印刷した眼鏡をかけることで、スマートフォンやセキュリティカメラの
                 顔認証システムを別人として突破できることが研究で示されています。</p>
             </div>
             """, unsafe_allow_html=True)
         with threat_c3:
-            st.markdown("""
+            st.markdown(f"""
             <div class="guide-box">
-                <h4>🩺 医療診断AI</h4>
+                <h4>{svg_icon("stethoscope", color="#0284c7")} 医療診断AI</h4>
                 <p>X線画像に微小なノイズを加えることで、正常な肺をAIに「肺炎」と誤診断させる
                 攻撃が理論的に可能です。医療現場でのAI活用には特に慎重な対策が必要です。</p>
             </div>
@@ -732,35 +918,39 @@ with tab3:
 # TAB 4: 防御と未来
 # ---------------------------------------------------------------
 with tab4:
-    st.header("🛡️ AIを守るために — 防御手法と倫理")
+    st.markdown(heading("AIを守るために — 防御手法と倫理", "shield", level=2), unsafe_allow_html=True)
 
     with st.container():
         st.markdown('<div class="lab-anchor-green"></div>', unsafe_allow_html=True)
 
         defenses = [
             {
-                "name": "🏋️ 敵対的訓練（Adversarial Training）",
+                "name": "敵対的訓練（Adversarial Training）",
+                "icon": "dumbbell",
                 "desc": "攻撃された画像もデータセットに含めてAIを再学習させる方法。最も効果的な防御の一つですが、"
                         "学習コストが高く、見たことのない新しい攻撃手法には対応できないことがあります。",
-                "level": 82, "color": "#05ffa1",
+                "level": 82, "color": "#059669",
             },
             {
-                "name": "🔍 攻撃検知モデル",
+                "name": "攻撃検知モデル",
+                "icon": "search",
                 "desc": "推論の前に「この画像は攻撃されているか？」を別のモデルで判定する方法。"
                         "検知した場合に警告・拒否できますが、検知モデル自体が攻撃される可能性もあります。",
-                "level": 68, "color": "#00d4ff",
+                "level": 68, "color": "#0284c7",
             },
             {
-                "name": "🌊 入力平滑化（Input Smoothing）",
+                "name": "入力平滑化（Input Smoothing）",
+                "icon": "droplet",
                 "desc": "入力画像にぼかし処理をかけてノイズを除去してから推論する方法。"
                         "シンプルで高速ですが、画像の細部も失われるため精度が低下することがあります。",
-                "level": 53, "color": "#ffd700",
+                "level": 53, "color": "#b45309",
             },
             {
-                "name": "🎲 ランダム化防御",
+                "name": "ランダム化防御",
+                "icon": "shuffle",
                 "desc": "推論のたびにランダムな変換を加えることで、攻撃者が狙える方向を予測不能にする方法。"
                         "同じ画像でも毎回少し異なる推論結果になります。",
-                "level": 62, "color": "#ff71ce",
+                "level": 62, "color": "#c026d3",
             },
         ]
 
@@ -768,17 +958,20 @@ with tab4:
             d_col_l, d_col_r = st.columns([4, 1])
             with d_col_l:
                 st.markdown(f"""
-                <div style="background:#1e2a3a; border:2px solid {d['color']};
+                <div style="background:#ffffff; border:2px solid {d['color']};
                             border-left:6px solid {d['color']}; padding:14px; margin-bottom:6px;">
-                    <strong style="color:{d['color']};">{d['name']}</strong>
-                    <p style="color:#e6edf3; margin:8px 0 0 0; font-size:0.88rem;">{d['desc']}</p>
+                    <strong style="color:{d['color']}; display:inline-flex;
+                                   align-items:center; gap:0.4em;">
+                        {svg_icon(d['icon'], size=16, color=d['color'])}{d['name']}
+                    </strong>
+                    <p style="color:#000000; margin:8px 0 0 0; font-size:0.88rem;">{d['desc']}</p>
                 </div>
                 """, unsafe_allow_html=True)
             with d_col_r:
                 st.markdown(f"<br>**有効度: {d['level']}%**", unsafe_allow_html=True)
                 st.progress(d["level"] / 100)
 
-    st.header("🌍 あなたはどう考える？— 倫理クイズ")
+    st.markdown(heading("あなたはどう考える？— 倫理クイズ", "globe", level=2), unsafe_allow_html=True)
     with st.container():
         st.markdown('<div class="lab-anchor-green"></div>', unsafe_allow_html=True)
 
@@ -793,43 +986,43 @@ with tab4:
         ethics_q = st.radio(
             "もし自動運転AIの重大な脆弱性を発見したら、あなたはどうしますか？",
             [
-                "🔐 自動車メーカーに非公開で報告し、修正後に発表を許可する",
-                "📢 すぐにSNSで公開して広く知らせる",
-                "💰 脆弱性情報を買い取る業者に売る",
-                "🔬 修正を待たずにすぐ学術論文として発表する",
+                "自動車メーカーに非公開で報告し、修正後に発表を許可する",
+                "すぐにSNSで公開して広く知らせる",
+                "脆弱性情報を買い取る業者に売る",
+                "修正を待たずにすぐ学術論文として発表する",
             ],
             key="ethics_radio"
         )
 
         ethics_responses = {
-            "🔐 自動車メーカーに非公開で報告し、修正後に発表を許可する": (
-                "✅ 正解です！これが「Responsible Disclosure（責任ある開示）」と呼ばれる国際的に推奨されている倫理的アプローチです。"
+            "自動車メーカーに非公開で報告し、修正後に発表を許可する": (
+                "正解です！これが「Responsible Disclosure（責任ある開示）」と呼ばれる国際的に推奨されている倫理的アプローチです。"
                 "メーカーが修正する時間を確保しながら、最終的に公開することで社会全体に貢献できます。"
                 "多くの大企業は「バグバウンティプログラム」という報奨金制度を設けています。",
-                "success"
+                "success", ":material/check_circle:"
             ),
-            "📢 すぐにSNSで公開して広く知らせる": (
-                "⚠️ 気持ちは分かりますが、即座の公開は悪意ある攻撃者にも情報が届くリスクがあります。"
+            "すぐにSNSで公開して広く知らせる": (
+                "気持ちは分かりますが、即座の公開は悪意ある攻撃者にも情報が届くリスクがあります。"
                 "修正が完了する前に実害が出る可能性があるため、まず開発者への通知が優先されます。",
-                "warning"
+                "warning", ":material/warning:"
             ),
-            "💰 脆弱性情報を買い取る業者に売る": (
-                "❌ 正規のバグバウンティプログラム以外での脆弱性売買は、法的・倫理的に問題があります。"
+            "脆弱性情報を買い取る業者に売る": (
+                "正規のバグバウンティプログラム以外での脆弱性売買は、法的・倫理的に問題があります。"
                 "悪意ある攻撃者への販売は刑事責任につながる可能性があります。",
-                "error"
+                "error", ":material/cancel:"
             ),
-            "🔬 修正を待たずにすぐ学術論文として発表する": (
-                "💡 学術発表は重要ですが、一般的には事前に開発者へ通知し、修正完了後に発表する"
+            "修正を待たずにすぐ学術論文として発表する": (
+                "学術発表は重要ですが、一般的には事前に開発者へ通知し、修正完了後に発表する"
                 "「Coordinated Disclosure（調整された開示）」が推奨されます。多くの学術誌もこの手順を求めています。",
-                "info"
+                "info", ":material/lightbulb:"
             ),
         }
 
         if ethics_q in ethics_responses:
-            msg, level = ethics_responses[ethics_q]
+            msg, level, _msg_icon = ethics_responses[ethics_q]
             getattr(st, level)(msg)
 
-    st.header("🚀 AIセキュリティの未来")
+    st.markdown(heading("AIセキュリティの未来", "rocket", level=2), unsafe_allow_html=True)
     with st.container():
         st.markdown('<div class="lab-anchor-green"></div>', unsafe_allow_html=True)
 

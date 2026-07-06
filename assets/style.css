@@ -9,39 +9,39 @@
    0. CSS CUSTOM PROPERTIES (変数定義)
    ============================================================ */
 :root {
-  /* --- 背景レイヤー (視認性向上: 濃紺→ミッドナイトブルー) --- */
-  --bg-base:     #0d1117;  /* 最深背景 */
-  --bg-surface:  #161b27;  /* 画面背景 */
-  --bg-card:     #1e2a3a;  /* カード */
-  --bg-elevated: #263548;  /* 強調カード */
+  /* --- 背景レイヤー (白ベース・近未来感トーン) --- */
+  --bg-base:     #eef2fb;  /* アクセントチップ背景（うっすら青みがかった白） */
+  --bg-surface:  #f5f7fc;  /* 画面全体の背景 */
+  --bg-card:     #ffffff;  /* カード */
+  --bg-elevated: #e7ecf5;  /* 強調カード・ホバー */
 
   /* --- ボーダー --- */
-  --border-dim:    #2d3f5a;
-  --border-main:   #3d5a8a;
-  --border-cyan:   #00d4ff;
-  --border-pink:   #ff71ce;
-  --border-green:  #05ffa1;
+  --border-dim:    #e2e8f0;
+  --border-main:   #cbd5e1;
+  --border-cyan:   #0284c7;
+  --border-pink:   #c026d3;
+  --border-green:  #059669;
 
-  /* --- アクセントカラー --- */
-  --color-cyan:   #00d4ff;  /* プライマリ (LCD ブルー) */
-  --color-pink:   #ff71ce;  /* セカンダリ (ネオンピンク) */
-  --color-green:  #05ffa1;  /* 成功 (マトリックス緑) */
-  --color-yellow: #ffd700;  /* 警告 (ゴールド) */
-  --color-red:    #ff4555;  /* エラー */
-  --color-purple: #b57bff;  /* 紫 */
-  --color-orange: #ff9f43;  /* オレンジ */
+  /* --- アクセントカラー (白背景でも視認性が保てるよう深めに調整) --- */
+  --color-cyan:   #0284c7;  /* プライマリ (AIブルー) */
+  --color-pink:   #c026d3;  /* セカンダリ (マゼンタ) */
+  --color-green:  #059669;  /* 成功 (エメラルド) */
+  --color-yellow: #b45309;  /* 警告 (アンバー) */
+  --color-red:    #dc2626;  /* エラー */
+  --color-purple: #7c3aed;  /* 紫 (バイオレット) */
+  --color-orange: #c2410c;  /* オレンジ */
 
-  /* --- テキスト (コントラスト向上) --- */
-  --text-main:  #e6edf3;   /* メインテキスト (明るいオフホワイト) */
-  --text-dim:   #8b9ab0;   /* 薄いテキスト (読みやすいグレー) */
-  --text-bright:#ffffff;   /* 白 */
+  /* --- テキスト (白背景用に反転) --- */
+  --text-main:  #000000;   /* メインテキスト (完全なブラック・視認性優先) */
+  --text-dim:   #64748b;   /* 薄いテキスト (読みやすいグレー) */
+  --text-bright:#0f172a;   /* 強調テキスト（黒に近い紺） */
 
-  /* --- ピクセルシャドウ (blur=0) --- */
-  --shadow-sm:   3px 3px 0px #000000;
-  --shadow-md:   4px 4px 0px #000000;
-  --shadow-cyan: 4px 4px 0px #003366;
-  --shadow-pink: 4px 4px 0px #550033;
-  --shadow-green:4px 4px 0px #003322;
+  /* --- ハードシャドウ (白背景でも映えるニューブルータリズム調) --- */
+  --shadow-sm:   3px 3px 0px rgba(15, 23, 42, 0.18);
+  --shadow-md:   4px 4px 0px rgba(15, 23, 42, 0.18);
+  --shadow-cyan: 4px 4px 0px rgba(2, 132, 199, 0.25);
+  --shadow-pink: 4px 4px 0px rgba(192, 38, 212, 0.22);
+  --shadow-green:4px 4px 0px rgba(5, 150, 105, 0.22);
 
   /* --- フォント --- */
   --font-pixel: 'Press Start 2P', 'DotGothic16', 'Courier New', monospace;
@@ -52,10 +52,22 @@
 /* ============================================================
    1. SECURITY & PROTECTION
    ============================================================ */
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
+
 .stApp {
   -webkit-user-select: none !important;
   user-select: none !important;
   overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
+
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"] {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
 }
 
 canvas, img, [data-testid="stImage"] {
@@ -99,14 +111,28 @@ a:active { pointer-events: none !important; }
 .stApp {
   background-color: var(--bg-surface) !important;
   background-image:
-    linear-gradient(rgba(0, 212, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 212, 255, 0.025) 1px, transparent 1px) !important;
+    linear-gradient(rgba(2, 132, 199, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(2, 132, 199, 0.05) 1px, transparent 1px) !important;
   background-size: 24px 24px !important;
   color: var(--text-main) !important;
   font-family: var(--font-dot) !important;
 }
 
-.stApp, .main { overflow-x: hidden !important; }
+.stApp, .main { overflow-x: hidden !important; max-width: 100vw !important; }
+
+/* 横スクロール対策: 長い未分割の文字列でも横に溢れさせない */
+p, span, li, label, div, h1, h2, h3, h4 {
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
+}
+
+/* 表・データフレームは常に内部スクロールに閉じ込め、ページ自体は横に伸ばさない */
+[data-testid="stTable"],
+[data-testid="stDataFrame"] {
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  display: block !important;
+}
 
 section.main .block-container {
   max-width: 100% !important;
@@ -133,12 +159,11 @@ p, span, li, label, ul {
   font-size: clamp(1.05rem, 2.8vw, 2rem) !important;
   font-weight: 400 !important;
   color: var(--color-cyan) !important;
-  text-shadow: 3px 3px 0px #003355, 6px 6px 0px #001122 !important;
   letter-spacing: 0.06em !important;
   padding-bottom: 0.3rem !important;
   margin-top: 0.6rem !important;
   border-bottom: 2px solid var(--border-cyan) !important;
-  border-radius: 0 !important;
+  border-radius: 8px !important;
 }
 
 /* h2: セクションヘッダー */
@@ -147,11 +172,10 @@ p, span, li, label, ul {
   font-size: clamp(0.8rem, 2.2vw, 1.3rem) !important;
   font-weight: 400 !important;
   color: var(--color-pink) !important;
-  text-shadow: 2px 2px 0px #550033 !important;
   padding: 10px 18px !important;
   background: var(--bg-card) !important;
   border: 2px solid var(--border-pink) !important;
-  border-radius: 0 !important;
+  border-radius: 8px !important;
   box-shadow: var(--shadow-pink) !important;
   display: inline-block !important;
   margin-top: 0.7rem !important;
@@ -167,7 +191,7 @@ p, span, li, label, ul {
   background: var(--bg-card) !important;
   border: 2px solid var(--border-main) !important;
   border-left: 5px solid var(--color-cyan) !important;
-  border-radius: 0 !important;
+  border-radius: 8px !important;
   padding: 7px 14px !important;
   margin-top: 0.6rem !important;
   margin-bottom: 0.3rem !important;
@@ -189,10 +213,9 @@ div[data-testid="stHeaderBlock"] h2,
   font-family: var(--font-pixel) !important;
   font-size: clamp(0.8rem, 2.2vw, 1.3rem) !important;
   color: var(--color-cyan) !important;
-  text-shadow: 2px 2px 0px #003355 !important;
   background: var(--bg-card) !important;
   border: 2px solid var(--border-cyan) !important;
-  border-radius: 0 !important;
+  border-radius: 8px !important;
   padding: 8px 16px !important;
   display: inline-block !important;
   margin-top: 0.8rem !important;
@@ -226,7 +249,7 @@ div[data-testid="stHeaderBlock"] h2::after,
 [data-testid="stSidebar"] a {
   background: var(--bg-card) !important;
   border: 2px solid var(--border-dim) !important;
-  border-radius: 0 !important;
+  border-radius: 8px !important;
   padding: 10px !important;
   margin-bottom: 8px !important;
   transition: transform 0.1s ease, box-shadow 0.1s ease !important;
@@ -244,7 +267,7 @@ div[data-testid="stHeaderBlock"] h2::after,
   background: rgba(5, 255, 161, 0.08) !important;
   color: var(--color-green) !important;
   border: 2px solid var(--border-green) !important;
-  border-radius: 0 !important;
+  border-radius: 8px !important;
   box-shadow: var(--shadow-green) !important;
 }
 
@@ -256,7 +279,7 @@ div[data-testid="stTabs"] { gap: 4px !important; }
 div[data-testid="stTabs"] button {
   background: var(--bg-card) !important;
   border: 2px solid var(--border-main) !important;
-  border-radius: 0 !important;
+  border-radius: 8px !important;
   padding: 8px 16px !important;
   transition: transform 0.1s ease, box-shadow 0.1s ease !important;
   box-shadow: 3px 3px 0px #000 !important;
@@ -290,7 +313,7 @@ div[data-testid="stTabs"] button p {
 div.stButton > button {
   height: auto !important;
   min-height: 58px !important;
-  border-radius: 0 !important;
+  border-radius: 8px !important;
   border: 2px solid var(--border-cyan) !important;
   background: var(--bg-card) !important;
   transition: transform 0.1s ease, box-shadow 0.1s ease !important;
@@ -366,7 +389,7 @@ div[data-testid="stRadio"] div[role="radiogroup"] {
 div[data-testid="stRadio"] div[role="radiogroup"] label {
   background: var(--bg-card) !important;
   border: 2px solid var(--border-dim) !important;
-  border-radius: 0 !important;
+  border-radius: 8px !important;
   padding: 10px 16px !important;
   transition: transform 0.1s ease, box-shadow 0.1s ease !important;
   cursor: pointer !important;
@@ -407,7 +430,7 @@ div[data-baseweb="select"] > div {
   background: var(--bg-card) !important;
   color: var(--text-main) !important;
   border: 2px solid var(--border-cyan) !important;
-  border-radius: 0 !important;
+  border-radius: 8px !important;
   box-shadow: var(--shadow-sm) !important;
 }
 
@@ -433,7 +456,7 @@ div[data-baseweb="popover"] *, div[role="tooltip"] * {
   padding: 12px 16px !important;
   border: 2px solid var(--border-main) !important;
   border-left: 6px solid var(--border-cyan) !important;
-  border-radius: 0 !important;
+  border-radius: 12px !important;
   box-shadow: var(--shadow-cyan) !important;
   color: var(--text-main) !important;
   line-height: 1.6;
@@ -470,7 +493,7 @@ div[data-baseweb="popover"] *, div[role="tooltip"] * {
   background: var(--bg-card) !important;
   padding: 18px !important;
   border: 2px dashed var(--border-cyan) !important;
-  border-radius: 0 !important;
+  border-radius: 12px !important;
   margin: 15px 0 !important;
   box-shadow: var(--shadow-sm) !important;
 }
@@ -481,7 +504,7 @@ div[data-baseweb="popover"] *, div[role="tooltip"] * {
   padding: 15px !important;
   border: 2px solid var(--color-red) !important;
   border-left: 6px solid var(--color-red) !important;
-  border-radius: 0 !important;
+  border-radius: 12px !important;
   color: var(--color-red) !important;
   font-weight: bold !important;
   box-shadow: 4px 4px 0px #440000 !important;
@@ -493,7 +516,6 @@ div[data-baseweb="popover"] *, div[role="tooltip"] * {
   font-size: clamp(1.4rem, 3.5vw, 2.8rem) !important;
   font-weight: 400 !important;
   color: var(--color-cyan) !important;
-  text-shadow: 4px 4px 0px #003355, 8px 8px 0px #001122 !important;
   line-height: 1.4;
   margin-bottom: 0.5rem !important;
 }
@@ -511,7 +533,7 @@ div[data-baseweb="popover"] *, div[role="tooltip"] * {
 .feature-card {
   background: var(--bg-card) !important;
   border: 2px solid var(--border-main) !important;
-  border-radius: 0 !important;
+  border-radius: 14px !important;
   padding: 16px !important;
   box-shadow: var(--shadow-md) !important;
   transition: transform 0.1s ease, box-shadow 0.1s ease !important;
@@ -555,7 +577,7 @@ div[data-baseweb="popover"] *, div[role="tooltip"] * {
   color: var(--color-green) !important;
   border: 2px solid var(--border-green) !important;
   border-left: 6px solid var(--color-green) !important;
-  border-radius: 0 !important;
+  border-radius: 12px !important;
   padding: 20px !important;
   font-family: var(--font-mono) !important;
   box-shadow: 4px 4px 0px #002211 !important;
@@ -571,7 +593,7 @@ div[data-baseweb="popover"] *, div[role="tooltip"] * {
   color: var(--color-cyan) !important;
   padding: 4px 10px !important;
   border: 2px solid var(--border-cyan) !important;
-  border-radius: 0 !important;
+  border-radius: 6px !important;
   font-size: 0.82rem !important;
   box-shadow: 2px 2px 0px #003355 !important;
   display: inline-block !important;
@@ -581,7 +603,7 @@ div[data-baseweb="popover"] *, div[role="tooltip"] * {
 .guide-box {
   background: var(--bg-card) !important;
   border: 2px solid var(--border-dim) !important;
-  border-radius: 0 !important;
+  border-radius: 12px !important;
   padding: 12px !important;
   height: 100% !important;
   transition: transform 0.1s ease, box-shadow 0.1s ease !important;
@@ -624,7 +646,7 @@ div[data-baseweb="popover"] *, div[role="tooltip"] * {
 div[data-testid="stMetric"] {
   background: var(--bg-card) !important;
   border: 2px solid var(--border-cyan) !important;
-  border-radius: 0 !important;
+  border-radius: 10px !important;
   padding: 5px 8px !important;
   text-align: center !important;
   box-shadow: var(--shadow-cyan) !important;
@@ -683,7 +705,7 @@ div[data-testid="stImageCaption"] {
   padding: 10px 20px !important;
   border: 2px solid var(--border-green) !important;
   border-left: 6px solid var(--color-green) !important;
-  border-radius: 0 !important;
+  border-radius: 10px !important;
   font-family: var(--font-mono) !important;
   margin-bottom: 20px !important;
   box-shadow: var(--shadow-green) !important;
@@ -693,7 +715,7 @@ div[data-testid="stImageCaption"] {
   background: var(--bg-card) !important;
   padding: 10px !important;
   border: 2px solid var(--border-main) !important;
-  border-radius: 0 !important;
+  border-radius: 10px !important;
   text-align: center !important;
   position: relative !important;
   box-shadow: var(--shadow-sm) !important;
@@ -721,7 +743,7 @@ div[data-testid="stImageCaption"] {
   box-shadow: 2px 2px 0px #003355 !important;
   font-family: var(--font-pixel) !important;
   letter-spacing: 0.05em !important;
-  border-radius: 0 !important;
+  border-radius: 6px !important;
 }
 
 .caption-text {
@@ -739,7 +761,7 @@ div[data-testid="stImageCaption"] {
   padding: clamp(0.4rem, 1.5vw, 0.8rem) clamp(0.5rem, 2vw, 1rem);
   background: var(--bg-card) !important;
   border: 2px solid var(--border-cyan) !important;
-  border-radius: 0 !important;
+  border-radius: 14px !important;
   box-shadow: 6px 6px 0px #002244 !important;
   margin-bottom: 1rem;
 }
@@ -749,7 +771,6 @@ div[data-testid="stImageCaption"] {
   font-size: clamp(1.4rem, 4.5vw, 3.5rem) !important;
   font-weight: 400 !important;
   color: var(--color-cyan) !important;
-  text-shadow: 4px 4px 0px #003355, 8px 8px 0px #001122 !important;
   margin-bottom: 0 !important;
   letter-spacing: 0.1em;
   display: block !important;
@@ -803,7 +824,7 @@ hr {
 div[data-testid="stVerticalBlock"]:has(> .element-container .stMarkdown .lab-anchor-green) {
   background: var(--bg-card) !important;
   border: 2px dashed var(--border-cyan) !important;
-  border-radius: 0 !important;
+  border-radius: 12px !important;
   width: 100% !important;
   max-width: none !important;
   padding: clamp(10px, 2vw, 20px) !important;
@@ -1017,8 +1038,6 @@ img { max-width: 100%; height: auto; }
   div[data-testid="stTabs"] [role="tablist"] {
     flex-wrap: nowrap !important;
     overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    scrollbar-width: none !important;
     padding-bottom: 2px !important;
   }
   div[data-testid="stTabs"] [role="tablist"]::-webkit-scrollbar { display: none !important; }
@@ -1119,7 +1138,6 @@ img { max-width: 100%; height: auto; }
   font-family: var(--font-pixel);
   font-size: 0.58rem;
   color: var(--color-cyan);
-  text-shadow: 2px 2px 0px #003355;
   white-space: nowrap;
   flex: 1;
 }
@@ -1210,13 +1228,12 @@ a.nav-link:focus {
 }
 
 /* ============================================================
-   21. TOP NAV — st.page_link ベース (ハンバーガー廃止・常時表示)
+   21. TOP NAV — ハンバーガーメニュー (st.page_link ベース)
    ============================================================ */
 .nav-brand-inline {
   font-family: var(--font-pixel);
   font-size: 0.55rem;
   color: var(--color-cyan);
-  text-shadow: 2px 2px 0 #003355;
   margin: 0 !important;
   padding: 6px 4px !important;
   line-height: 2.2;
@@ -1229,23 +1246,110 @@ a.nav-link:focus {
   box-shadow: 0 3px 10px #001a2e;
 }
 
-/* メインエリアの page_link をナビリンク風にスタイル */
+/* ハンバーガー/閉じるトグルボタン（右上・正方形・三本線="☰"）
+   スクロールしても常に画面右上に留まるよう viewport 基準の position:fixed にする。 */
+.st-key-nav_hamburger_container {
+  position: fixed !important;
+  top: 12px;
+  right: clamp(10px, 2vw, 24px);
+  z-index: 10000 !important;
+  width: 44px !important;
+}
+
+.st-key-nav_hamburger_container div.stButton > button {
+  min-height: 44px !important;
+  height: 44px !important;
+  width: 44px !important;
+  min-width: 44px !important;
+  max-width: 44px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.st-key-nav_hamburger_container div.stButton > button p {
+  font-size: 1.2rem !important;
+  color: var(--color-cyan) !important;
+  line-height: 1 !important;
+}
+
+/* ハンバーガー展開時：背景を軽く暗くするバックドロップ。
+   クリックするとメニューが閉じる（実体は画面全面を覆う透明な st.button）。
+   パネル(z-index:9999)より低いので、パネル自体のクリックには反応しない。 */
+.st-key-nav_backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9998 !important;
+  background: rgba(15, 23, 42, 0.32) !important;
+}
+
+.st-key-nav_backdrop div.stButton > button {
+  width: 100% !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: transparent !important;
+  cursor: default !important;
+  border-radius: 0 !important;
+}
+
+/* ページ一覧パネル：ページ本文の flow から切り離し、画面最前面・右半分程度に固定表示 */
+.st-key-nav_dropdown_panel {
+  position: fixed !important;
+  top: 62px;
+  right: clamp(10px, 2vw, 24px);
+  width: min(50vw, 380px) !important;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+  z-index: 9999 !important;
+  background: var(--bg-card) !important;
+  border: 2px solid var(--border-cyan) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.28), 0 0 0 4px rgba(2, 132, 199, 0.08) !important;
+  padding: 14px !important;
+}
+
+.st-key-nav_dropdown_panel [data-testid="stPageLink"] {
+  margin-bottom: 6px;
+}
+
+.nav-dropdown-title {
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  color: var(--color-cyan);
+  margin: 0 0 10px 0 !important;
+  padding-bottom: 8px;
+  border-bottom: 2px dashed var(--border-dim);
+}
+
+@media (max-width: 640px) {
+  .st-key-nav_dropdown_panel {
+    width: min(82vw, 320px) !important;
+    top: 58px;
+  }
+}
+
+/* メインエリアの page_link をナビリンク風にスタイル（展開リストは左寄せで縦積み） */
 [data-testid="stMain"] [data-testid="stPageLink"] a {
   background: var(--bg-card) !important;
   border: 2px solid var(--border-dim) !important;
   border-left: 3px solid var(--border-dim) !important;
   color: var(--text-dim) !important;
-  padding: 5px 8px !important;
+  padding: 10px 14px !important;
   display: flex !important;
   align-items: center !important;
-  justify-content: center !important;
+  justify-content: flex-start !important;
   text-decoration: none !important;
   font-family: var(--font-dot) !important;
-  font-size: 0.78rem !important;
+  font-size: 0.85rem !important;
   box-shadow: 2px 2px 0 #000 !important;
   transition: border-color 0.1s, background 0.1s, color 0.1s !important;
   width: 100% !important;
-  min-height: 36px !important;
+  min-height: 40px !important;
 }
 
 [data-testid="stMain"] [data-testid="stPageLink"] a:hover {
@@ -1268,4 +1372,65 @@ a.nav-link:focus {
   margin: 0 !important;
   font-size: 0.78rem !important;
   color: inherit !important;
+}
+
+/* ============================================================
+   22. ICONS — SVGロゴ（絵文字の完全置換）
+   ============================================================ */
+.icon-inline {
+  display: inline-block;
+  vertical-align: -0.2em;
+  flex-shrink: 0;
+}
+
+h1 .icon-inline, .main-title-text .icon-inline { vertical-align: -0.12em; margin-right: 0.15em; }
+h2 .icon-inline, h3 .icon-inline { vertical-align: -0.18em; margin-right: 0.3em; }
+
+.icon-cyan   { color: var(--color-cyan)   !important; }
+.icon-pink   { color: var(--color-pink)   !important; }
+.icon-green  { color: var(--color-green)  !important; }
+.icon-yellow { color: var(--color-yellow) !important; }
+.icon-red    { color: var(--color-red)    !important; }
+.icon-purple { color: var(--color-purple) !important; }
+.icon-orange { color: var(--color-orange) !important; }
+.icon-dim    { color: var(--text-dim)     !important; }
+
+.icon-spin { animation: icon-spin-anim 2.2s linear infinite; }
+@keyframes icon-spin-anim { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.icon-pulse { animation: icon-pulse-anim 1.6s ease-in-out infinite; }
+@keyframes icon-pulse-anim { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.15); } }
+
+/* インラインアイコン付きバッジ・ボックス見出し用の共通レイアウト */
+.icon-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  flex-wrap: wrap;
+}
+
+.icon-stat-box {
+  background: var(--bg-card) !important;
+  border: 2px solid var(--border-main) !important;
+  padding: 10px 14px !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+/* st.button / st.page_link 内に埋め込んだSVGアイコンの縦位置調整 */
+div.stButton > button svg,
+[data-testid="stPageLink"] svg {
+  vertical-align: -0.15em;
+  margin-right: 0.3em;
+}
+
+/* サイドバー・見出し内のアイコン整列 */
+[data-testid="stSidebar"] h1 .icon-inline,
+[data-testid="stSidebar"] h2 .icon-inline,
+[data-testid="stSidebar"] h3 .icon-inline { vertical-align: -0.15em; }
+
+@media (max-width: 480px) {
+  .icon-stat-box { padding: 8px 10px !important; gap: 7px; }
 }

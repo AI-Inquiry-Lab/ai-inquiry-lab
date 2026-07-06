@@ -688,7 +688,6 @@ with tab3:
 
     # 収束時のお祝い（バルーンは一度だけ）
     if st.session_state["km_converged_ml8"] and not st.session_state["km_celebrated_ml8"]:
-        st.balloons()
         st.session_state["km_celebrated_ml8"] = True
 
     st.markdown(f"""
@@ -855,7 +854,6 @@ with tab4:
         st.metric("スコア", f"{score} / {N} 問正解")
         if score == N:
             st.success("全問正解！ 3つの学び方をしっかり見分けられています。")
-            st.balloons()
         elif score >= N - 2:
             st.info("いい線です！ 迷ったら「正解ラベルはあるか？」を思い出してみましょう。")
         else:

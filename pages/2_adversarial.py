@@ -694,8 +694,6 @@ with tab2:
 
             if total_score > st.session_state["best_score_2"]:
                 st.session_state["best_score_2"] = total_score
-                if total_score > 10:
-                    st.balloons()
 
             # --- 攻撃タイプ別リーダーボードを更新 ---
             board = st.session_state["adv_leaderboard"]
@@ -778,7 +776,6 @@ with tab2:
         if tried >= len(ATTACK_BY_KEY):
             if not st.session_state["adv_full_clear_done_adv2"]:
                 st.session_state["adv_full_clear_done_adv2"] = True
-                st.balloons()
             st.success("完全制覇！4種類すべての攻撃タイプを記録しました。")
             st.markdown(f"""
             <div class="explanation-box">

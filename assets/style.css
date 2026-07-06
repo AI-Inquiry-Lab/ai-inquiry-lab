@@ -342,6 +342,13 @@ div.stButton > button p {
 /* 透明オーバーレイボタン */
 .clickable-card-container { position: relative; width: 100%; margin-bottom: 20px; }
 
+/* ホームのミッションカード: st.container(key="mission_card_...") が生成する
+   実コンテナに position:relative を与え、中の .invisible-button (position:absolute)
+   がカード全体（タイトル含む）を覆うようにする。 */
+[class*="st-key-mission_card_"] {
+  position: relative !important;
+}
+
 .invisible-overlay,
 .invisible-button {
   position: absolute !important;

@@ -519,7 +519,6 @@ with tab1:
         # 【バッジ】ニューロン発火 — 初回獲得時のみ祝福
         if award_badge_badge3("neuron_fire"):
             st.success("バッジ獲得：「ニューロン発火」！ 初めてニューロンを発火させました。")
-            st.balloons()
     else:
         st.info(f"このニューロンは「静止」しています。 出力 {out_val:.3f} ≤ 0.5 → クラス 0 として判定")
 
@@ -631,7 +630,6 @@ with tab2:
 
         if best_acc >= 95:
             st.success(f"エクセレント！ 精度 {best_acc:.1f}% 達成！AI の学習が成功しました！")
-            st.balloons()
         elif best_acc >= 80:
             st.success(f"グッジョブ！ 精度 {best_acc:.1f}% — 学習率やエポック数を調整してさらに改善できるか試してみよう！")
         elif result["dataset_key"] != "xor":
@@ -640,7 +638,6 @@ with tab2:
         # 【バッジ】優秀な生徒 — XOR以外で最高精度95%以上
         if best_acc >= 95 and result["dataset_key"] != "xor" and award_badge_badge3("good_student"):
             st.success("バッジ獲得：「優秀な生徒」！ XOR以外のデータで95%以上の精度を達成しました。")
-            st.balloons()
 
         st.info(f"今セッション最高精度：**{st.session_state['best_accuracy_3']:.1f}%**")
 
@@ -721,7 +718,6 @@ with tab3:
     # 【バッジ】深層の設計者 — 隠れ層を2層構成にした
     if n_hidden1 > 0 and n_hidden2 > 0 and award_badge_badge3("deep_designer"):
         st.success("バッジ獲得：「深層の設計者」！ 隠れ層2層のディープなネットワークを設計しました。")
-        st.balloons()
 
     st.markdown(heading("有名なネットワークとの比較", "bar-chart", level=3), unsafe_allow_html=True)
     cmp_cols = st.columns(4)
@@ -879,7 +875,6 @@ with tab4:
         # 【バッジ】バランス感覚 — 過学習スコアが健全域(1.0〜1.5)
         if 1.0 <= overfit_ratio <= 1.5 and award_badge_badge3("balance"):
             st.success("バッジ獲得：「バランス感覚」！ 過学習も未学習もない健全なフィット(スコア1.0〜1.5)を達成しました。")
-            st.balloons()
 
         st.markdown(f"""
         <div class="explanation-box" style="margin-top:16px;">

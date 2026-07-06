@@ -202,21 +202,22 @@ for row in mission_rows:
     cols = st.columns(3)
     for col, m in zip(cols, row):
         with col:
-            st.markdown(f"""
-            <div class="feature-card">
-                <h3>{svg_icon(m['icon'], size=20)} {m['title']}</h3>
-                <p>{m['desc']}</p>
-                <div class="math-badge">{m['badge']}</div>
-            </div>
-            """, unsafe_allow_html=True)
+            # st.container(key=...) は本物のDOM要素を生成するため、その中に
+            # カードの見た目(markdown)と透明button(invisible-button)を両方入れることで
+            # 「タイトルを含むカード全体」を確実にクリック可能にする。
+            with st.container(key=f"mission_card_{m['key']}"):
+                st.markdown(f"""
+                <div class="feature-card">
+                    <h3>{svg_icon(m['icon'], size=20)} {m['title']}</h3>
+                    <p>{m['desc']}</p>
+                    <div class="math-badge">{m['badge']}</div>
+                </div>
+                """, unsafe_allow_html=True)
 
-            with st.container():
                 st.markdown('<div class="invisible-button">', unsafe_allow_html=True)
                 if st.button(f"{m['title']}を体験するにはここをクリック！", use_container_width=True, key=m["key"]):
                     st.switch_page(m["page"])
                 st.markdown('</div>', unsafe_allow_html=True)
-
-            st.markdown('</div>', unsafe_allow_html=True)
 # =====================================
 # 7. 今日のInsight（ハッカー風デザイン）
 # =====================================

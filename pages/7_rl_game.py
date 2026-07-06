@@ -764,7 +764,6 @@ with tab2:
                 f"見事！ 終盤の成功率 {success_rate:.0f}% — エージェントは"
                 "自力で迷路の解き方を身につけました。",
             )
-            st.balloons()
         elif success_rate >= 40:
             st.warning(
                 f"成功率 {success_rate:.0f}% — あと一歩。エピソード数を増やすか、"
@@ -1010,7 +1009,6 @@ with tab4:
             st.warning("あきらめました。リセットしてもう一度挑戦できます。")
         elif st.session_state["rl_human_win"]:
             st.success(f"ゴール到達！ あなたは {human_steps} 歩でクリアしました！")
-            st.balloons()
         else:
             st.error("罠にはまってしまいました。リセットして再挑戦しよう。")
 
